@@ -450,32 +450,81 @@
     @keyframes toastIn{to{opacity:1;transform:translateY(0)}}
     @keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
 
-    /* ── ROUTE BOX ───────────────────────────────────── */
+    /* ── ROUTE BOX — maps navigation style ─────────── */
     .route-box{
-      background:var(--surface-2);border:1.5px solid var(--border);
-      border-radius:var(--r-md);padding:.9rem 1rem;
-      display:flex;flex-direction:column;gap:0;
+      background:var(--surface);
+      border:1.5px solid var(--border);
+      border-radius:var(--r-md);
+      overflow:hidden;
+      box-shadow:var(--shadow-sm);
     }
-    .route-field{display:flex;align-items:center;gap:.75rem;}
-    .route-dot{
+    .route-field{
+      display:flex;align-items:center;gap:0;
+      padding:.6rem .75rem;
+      position:relative;
+    }
+    .route-field + .route-field{
+      border-top:1px solid var(--border);
+    }
+    .route-pin{
+      width:36px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+    }
+    /* animated dotted line between pins */
+    .route-pin-dot{
       width:11px;height:11px;border-radius:50%;flex-shrink:0;
-      border:2.5px solid;
     }
-    .route-dot.from{border-color:var(--primary);background:#fff;}
-    .route-dot.to  {border-color:var(--accent-rose);background:var(--accent-rose);}
-    .route-field-inner{flex:1;display:flex;flex-direction:column;gap:.15rem;}
-    .route-field-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);}
+    .pin-from{background:#fff;border:2.5px solid var(--primary);}
+    .pin-to  {background:var(--accent-rose);border:2.5px solid var(--accent-rose);}
+    .route-line-wrap{
+      position:absolute;left:calc(.75rem + 17.5px - .5px);
+      top:50%;bottom:-50%;
+      width:2px;
+      background:repeating-linear-gradient(
+        to bottom,
+        var(--border) 0px, var(--border) 4px,
+        transparent 4px, transparent 8px
+      );
+      pointer-events:none;
+    }
+    .route-field-inner{
+      flex:1;display:flex;flex-direction:column;
+      min-width:0;
+    }
+    .route-field-lbl{
+      font-size:.65rem;font-weight:800;
+      text-transform:uppercase;letter-spacing:.5px;
+      color:var(--text-3);margin-bottom:.1rem;
+    }
     .route-input{
       background:transparent;border:none;border-radius:0;
-      padding:.15rem 0;font-size:.95rem;font-weight:700;
-      box-shadow:none;border-bottom:1.5px solid var(--border);
+      padding:.1rem 0;font-size:.97rem;font-weight:700;
+      color:var(--text);width:100%;
+      box-shadow:none;outline:none;
     }
-    .route-input:focus{border-bottom-color:var(--primary);box-shadow:none;background:transparent;}
-    .route-connector{
-      display:flex;align-items:center;gap:.5rem;
-      padding:.3rem 0 .3rem 4.5px;
+    .route-input::placeholder{color:var(--text-3);font-weight:500;}
+    .route-input:focus{background:transparent;box-shadow:none;border:none;}
+    /* swap button */
+    .route-swap{
+      flex-shrink:0;width:32px;height:32px;border-radius:50%;
+      border:1.5px solid var(--border);background:var(--surface);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text-2);
+      transition:all .18s var(--ease);
+      box-shadow:var(--shadow-sm);
+      /* overlaps the divider line between the two fields */
+      position:absolute;right:.75rem;top:50%;
+      transform:translateY(-50%);
+      z-index:2;
     }
-    .connector-line{width:1.5px;height:18px;background:var(--border);margin-left:.05rem;}
+    .route-swap:hover{
+      background:var(--primary);border-color:var(--primary);
+      color:#fff;transform:translateY(-50%) rotate(180deg);
+    }
+    /* highlight focused field */
+    .route-field:focus-within{background:rgba(123,179,240,.04);}
+    .route-field:focus-within .route-field-lbl{color:var(--primary);}
+    .route-field:focus-within .route-pin-dot.pin-from{border-color:var(--primary-dk);}
 
     /* route strip in result card */
     .rc-route{
@@ -753,7 +802,7 @@
 
       <form id="evalForm" onsubmit="return false;">
 
-        <!-- Route: From / To -->
+        <!-- Route: From / To — maps nav style -->
         <div class="form-group">
           <label class="form-label">
             <span class="lbl-icon" style="background:#EEF4FF;">
@@ -761,27 +810,39 @@
             </span>
             Your Route
           </label>
+
           <div class="route-box">
-            <!-- From -->
-            <div class="route-field">
-              <div class="route-dot from"></div>
+            <!-- FROM field -->
+            <div class="route-field" style="position:relative;">
+              <!-- dotted connector line drawn as pseudo — position relative to pin -->
+              <div class="route-line-wrap"></div>
+              <div class="route-pin">
+                <div class="route-pin-dot pin-from"></div>
+              </div>
               <div class="route-field-inner">
                 <span class="route-field-lbl">From</span>
-                <input class="text-input route-input" type="text" id="fromInput" value="Biñan" placeholder="Origin city / place" required>
+                <input class="route-input" type="text" id="fromInput"
+                  value="Biñan" placeholder="Starting point" autocomplete="off" required>
               </div>
             </div>
-            <!-- Dashed connector -->
-            <div class="route-connector" aria-hidden="true">
-              <div class="connector-line"></div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-            </div>
-            <!-- To -->
-            <div class="route-field">
-              <div class="route-dot to"></div>
+
+            <!-- TO field -->
+            <div class="route-field" style="position:relative;">
+              <div class="route-pin">
+                <div class="route-pin-dot pin-to"></div>
+              </div>
               <div class="route-field-inner">
                 <span class="route-field-lbl">To</span>
-                <input class="text-input route-input" type="text" id="toInput" value="" placeholder="Destination city / place" required>
+                <input class="route-input" type="text" id="toInput"
+                  value="" placeholder="Where are you going?" autocomplete="off">
               </div>
+              <!-- Swap button sits on the divider between the two fields -->
+              <button type="button" class="route-swap" onclick="swapRoute()" title="Swap origin and destination" aria-label="Swap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/>
+                  <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -941,10 +1002,10 @@
       API Keys
     </h1>
 
-    <!-- Persist note -->
+    <!-- persist note -->
     <div class="persist-note">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      Keys are saved in your browser's local storage — you only need to enter them once. They'll be here every time you open the app.
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Default API keys are already built into the app — it works out of the box. Only fill these in if you want to use your own keys instead.
     </div>
 
     <!-- OpenWeatherMap Card -->
@@ -1197,8 +1258,8 @@
 <script>
   /* ── CONFIG ────────────────────────────────────── */
   const CFG = {
-    weatherKey: '',
-    trafficKey: '',
+    weatherKey: 'e165df0b18208802bfb6bc67d4ba8884',
+    trafficKey: 'vbHF2xqBFbqM48ClL3w6qi7LuwqdxYlJ',
     defaultCity: 'Biñan',
     defaultCoords: { lat: 14.3122, lon: 121.0914 }
   };
@@ -1281,8 +1342,9 @@
 
   /* ── KEY MANAGEMENT ────────────────────────────── */
   function loadKeys() {
-    const w = localStorage.getItem('bn_wkey') || '';
-    const t = localStorage.getItem('bn_tkey') || '';
+    // Use baked-in keys as defaults; localStorage overrides if user saved their own
+    const w = localStorage.getItem('bn_wkey') || CFG.weatherKey;
+    const t = localStorage.getItem('bn_tkey') || CFG.trafficKey;
     CFG.weatherKey = w;
     CFG.trafficKey = t;
     if (document.getElementById('wKeyInput')) document.getElementById('wKeyInput').value = w;
@@ -1333,6 +1395,23 @@
         chipTxt.textContent = 'No Weather key';
       }
     }
+  }
+
+  /* ── SWAP ROUTE ────────────────────────────────── */
+  function swapRoute() {
+    const from = document.getElementById('fromInput');
+    const to   = document.getElementById('toInput');
+    const tmp  = from.value;
+    from.value = to.value;
+    to.value   = tmp;
+    // brief visual feedback on the swap button
+    const btn = document.querySelector('.route-swap');
+    btn.style.background = 'var(--primary)';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 300);
   }
 
   /* ── SHOW / HIDE KEY ───────────────────────────── */
