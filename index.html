@@ -455,13 +455,21 @@
       background:var(--surface);
       border:1.5px solid var(--border);
       border-radius:var(--r-md);
-      overflow:hidden;
+      overflow:visible;
       box-shadow:var(--shadow-sm);
     }
     .route-field{
       display:flex;align-items:center;gap:0;
       padding:.6rem .75rem;
       position:relative;
+    }
+    .route-field:first-of-type {
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+    .route-field:last-of-type {
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
     }
     .route-field + .route-field{
       border-top:1px solid var(--border);
@@ -515,7 +523,7 @@
       /* overlaps the divider line between the two fields */
       position:absolute;right:.75rem;top:50%;
       transform:translateY(-50%);
-      z-index:2;
+      z-index:1001; /* Must be higher than suggestions list z-index */
     }
     .route-swap:hover{
       background:var(--primary);border-color:var(--primary);
@@ -525,6 +533,76 @@
     .route-field:focus-within{background:rgba(123,179,240,.04);}
     .route-field:focus-within .route-field-lbl{color:var(--primary);}
     .route-field:focus-within .route-pin-dot.pin-from{border-color:var(--primary-dk);}
+
+    /* Suggestions dropdown */
+    .suggestions-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 6px;
+      display: none;
+    }
+    .suggestions-list.visible {
+      display: block;
+    }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .7rem .9rem;
+      cursor: pointer;
+      transition: background .15s var(--ease);
+      border-bottom: 1px solid var(--surface-2);
+    }
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+    .suggestion-item:hover, .suggestion-item.active {
+      background: var(--surface-2);
+    }
+    .suggestion-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #EEF4FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--primary-dk);
+      font-size: .9rem;
+    }
+    .suggestion-content {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+    .suggestion-main {
+      font-size: .85rem;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .suggestion-sub {
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: .05rem;
+    }
 
     /* route strip in result card */
     .rc-route{
@@ -761,11 +839,6 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="tab-label">Home</span>
     </button>
-    <button class="nav-tab" data-page="settings" role="tab" aria-selected="false">
-      <!-- settings icon -->
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      <span class="tab-label">API Keys</span>
-    </button>
     <button class="nav-tab" data-page="about" role="tab" aria-selected="false">
       <!-- info icon -->
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -778,10 +851,6 @@
       <!-- clock icon -->
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       <span id="clock-text">--:--</span>
-    </div>
-    <div class="chip" id="api-status-chip">
-      <span class="chip-dot"></span>
-      <span id="api-status-text">No Keys</span>
     </div>
   </div>
 </header>
@@ -824,6 +893,7 @@
                 <input class="route-input" type="text" id="fromInput"
                   value="Biñan" placeholder="Starting point" autocomplete="off" required>
               </div>
+              <div id="fromSuggestions" class="suggestions-list"></div>
             </div>
 
             <!-- TO field -->
@@ -836,6 +906,7 @@
                 <input class="route-input" type="text" id="toInput"
                   value="" placeholder="Where are you going?" autocomplete="off">
               </div>
+              <div id="toSuggestions" class="suggestions-list"></div>
               <!-- Swap button sits on the divider between the two fields -->
               <button type="button" class="route-swap" onclick="swapRoute()" title="Swap origin and destination" aria-label="Swap">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1271,6 +1342,8 @@
     location: 'Biñan',
     from: 'Biñan',
     to: '',
+    fromCoords: { lat: 14.3122, lon: 121.0914 },
+    toCoords: null,
     loading: false,
     lastWeather: null,
     lastTraffic: null
@@ -1283,6 +1356,7 @@
     syncBudgetControls();
     initNav();
     refreshStatusDots();
+    setupAutocomplete();
   });
 
   /* ── NAV ───────────────────────────────────────── */
@@ -1404,6 +1478,17 @@
     const tmp  = from.value;
     from.value = to.value;
     to.value   = tmp;
+
+    // Swap our state values and coordinates
+    const tmpName = S.from;
+    S.from = S.to;
+    S.to = tmpName;
+    S.location = S.from;
+
+    const tmpCoords = S.fromCoords;
+    S.fromCoords = S.toCoords;
+    S.toCoords = tmpCoords;
+
     // brief visual feedback on the swap button
     const btn = document.querySelector('.route-swap');
     btn.style.background = 'var(--primary)';
@@ -1424,6 +1509,178 @@
       ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
       : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
   }
+
+  // Autocomplete suggestions controller
+  function setupAutocomplete() {
+    const fromInput = document.getElementById('fromInput');
+    const toInput = document.getElementById('toInput');
+    const fromSugg = document.getElementById('fromSuggestions');
+    const toSugg = document.getElementById('toSuggestions');
+
+    setupInputAutocomplete(fromInput, fromSugg, (name, coords) => {
+      S.from = name;
+      S.fromCoords = coords;
+      S.location = name;
+    });
+
+    setupInputAutocomplete(toInput, toSugg, (name, coords) => {
+      S.to = name;
+      S.toCoords = coords;
+    });
+
+    // Close suggestions lists when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!fromInput.contains(e.target) && !fromSugg.contains(e.target)) {
+        fromSugg.classList.remove('visible');
+      }
+      if (!toInput.contains(e.target) && !toSugg.contains(e.target)) {
+        toSugg.classList.remove('visible');
+      }
+    });
+  }
+
+  function setupInputAutocomplete(input, suggContainer, onSelect) {
+    let debounceTimer;
+    let activeIndex = -1;
+    let currentItems = [];
+
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const query = input.value.trim();
+      if (query.length < 2) {
+        suggContainer.innerHTML = '';
+        suggContainer.classList.remove('visible');
+        return;
+      }
+
+      debounceTimer = setTimeout(async () => {
+        try {
+          const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(query)}.json?key=${CFG.trafficKey}&typeahead=true&limit=5&countrySet=PH`;
+          const res = await fetch(url);
+          if (!res.ok) return;
+          const data = await res.json();
+          currentItems = data.results || [];
+          activeIndex = -1;
+          renderSuggestions(currentItems, suggContainer, input, onSelect);
+        } catch (err) {
+          console.error('Error fetching autocomplete:', err);
+        }
+      }, 300);
+    });
+
+    input.addEventListener('focus', () => {
+      if (input.value.trim().length >= 2 && suggContainer.children.length > 0) {
+        suggContainer.classList.add('visible');
+      }
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      const items = suggContainer.querySelectorAll('.suggestion-item');
+      if (!suggContainer.classList.contains('visible') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = (activeIndex + 1) % items.length;
+        updateActiveSuggestion(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = (activeIndex - 1 + items.length) % items.length;
+        updateActiveSuggestion(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex >= 0 && activeIndex < currentItems.length) {
+          selectSuggestion(currentItems[activeIndex], input, suggContainer, onSelect);
+        }
+      } else if (e.key === 'Escape') {
+        suggContainer.classList.remove('visible');
+        input.blur();
+      }
+    });
+
+    function updateActiveSuggestion(items) {
+      items.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add('active');
+          item.scrollIntoView({ block: 'nearest' });
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+  }
+
+  function renderSuggestions(results, container, input, onSelect) {
+    container.innerHTML = '';
+    if (results.length === 0) {
+      container.classList.remove('visible');
+      return;
+    }
+
+    results.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'suggestion-item';
+
+      const mainText = item.poi?.name || item.address?.streetName || item.address?.freeformAddress || 'Unknown location';
+      const subText = item.address?.freeformAddress || '';
+
+      div.innerHTML = `
+        <div class="suggestion-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+        </div>
+        <div class="suggestion-content">
+          <span class="suggestion-main">${mainText}</span>
+          <span class="suggestion-sub">${subText}</span>
+        </div>
+      `;
+
+      div.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectSuggestion(item, input, container, onSelect);
+      });
+
+      container.appendChild(div);
+    });
+
+    container.classList.add('visible');
+  }
+
+  function selectSuggestion(item, input, container, onSelect) {
+    const mainText = item.poi?.name || item.address?.streetName || item.address?.freeformAddress || 'Unknown location';
+    const subText = item.address?.freeformAddress || '';
+    const textValue = item.poi?.name ? `${mainText}, ${subText}` : subText;
+
+    input.value = textValue;
+    container.classList.remove('visible');
+
+    const lat = item.position.lat;
+    const lon = item.position.lon;
+
+    onSelect(textValue, { lat, lon });
+  }
+
+  async function geocodeAddress(query) {
+    if (!query) return null;
+    try {
+      const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(query)}.json?key=${CFG.trafficKey}&limit=1&countrySet=PH`;
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const item = data.results[0];
+        return {
+          name: item.poi?.name ? `${item.poi.name}, ${item.address.freeformAddress}` : item.address.freeformAddress,
+          coords: { lat: item.position.lat, lon: item.position.lon }
+        };
+      }
+    } catch (e) {
+      console.error('Geocoding fallback failed:', e);
+    }
+    return null;
+  }
 </script>
 
 <script>
@@ -1431,37 +1688,66 @@
   async function runEvaluation() {
     if (S.loading) return;
 
-    // Collect inputs
-    S.budget   = parseInt(document.getElementById('budgetInput').value) || 0;
-    S.from     = document.getElementById('fromInput').value.trim() || CFG.defaultCity;
-    S.to       = document.getElementById('toInput').value.trim() || '';
-    S.location = S.from; // weather is fetched from origin
-    const energyEl = document.querySelector('input[name="energy"]:checked');
-    S.energy = energyEl ? energyEl.value : 'NORMAL';
-
     const wKey = CFG.weatherKey;
     const tKey = CFG.trafficKey;
 
     if (!wKey) {
-      toast('No Weather API key. Go to API Keys tab to set one.', 'err');
-      // Navigate to settings
-      document.querySelector('[data-page="settings"]').click();
+      toast('No Weather API key preset.', 'err');
       return;
     }
 
     setLoading(true);
 
+    // Verify coordinates fallback if typed manually
+    const typedFrom = document.getElementById('fromInput').value.trim() || CFG.defaultCity;
+    const typedTo = document.getElementById('toInput').value.trim() || '';
+
+    // If "From" text changed or coords don't exist
+    if (typedFrom !== S.from || !S.fromCoords) {
+      const geo = await geocodeAddress(typedFrom);
+      if (geo) {
+        S.from = geo.name;
+        S.fromCoords = geo.coords;
+      } else {
+        S.from = typedFrom;
+        S.fromCoords = CFG.defaultCoords;
+      }
+    }
+    S.location = S.from;
+
+    // If "To" text changed or coords don't exist
+    if (typedTo) {
+      if (typedTo !== S.to || !S.toCoords) {
+        const geo = await geocodeAddress(typedTo);
+        if (geo) {
+          S.to = geo.name;
+          S.toCoords = geo.coords;
+        } else {
+          S.to = typedTo;
+          S.toCoords = null;
+        }
+      }
+    } else {
+      S.to = '';
+      S.toCoords = null;
+    }
+
+    // Collect remaining inputs
+    S.budget = parseInt(document.getElementById('budgetInput').value) || 0;
+    const energyEl = document.querySelector('input[name="energy"]:checked');
+    S.energy = energyEl ? energyEl.value : 'NORMAL';
+
     let weatherState = null;
     let trafficState = null;
     let weatherMeta  = null;
     let trafficMeta  = null;
-    let coords       = CFG.defaultCoords;
+    let coords       = S.fromCoords || CFG.defaultCoords;
     let distKm       = null;   // straight-line km between From and To
     let distClass    = 'UNKNOWN'; // SHORT / MEDIUM / LONG / UNKNOWN
 
     /* ── Step A: Weather ─────────────────────────── */
     try {
-      const wUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.location)}&appid=${wKey}`;
+      const wUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${wKey}`;
       const wRes = await fetch(wUrl);
       if (!wRes.ok) {
         if (wRes.status === 401) {
@@ -1482,7 +1768,6 @@
         temp:  (wd.main.temp - 273.15).toFixed(1),
         city:  wd.name
       };
-      coords = { lat: wd.coord.lat, lon: wd.coord.lon };
       S.lastWeather = { state: weatherState, meta: weatherMeta };
     } catch (e) {
       setLoading(false);
@@ -1491,37 +1776,25 @@
         return;
       }
       if (e.message === 'WEATHER_404') {
-        toast(`City "${S.location}" not found — try a nearby city name.`, 'err');
+        toast(`City weather data not found for location.`, 'err');
         return;
       }
       toast(`Weather fetch failed: ${e.message}`, 'err');
       return;
     }
 
-    /* ── Step B: Geocode destination → compute distance ── */
-    if (S.to) {
-      try {
-        const gUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.to)}&appid=${wKey}`;
-        const gRes = await fetch(gUrl);
-        if (gRes.ok) {
-          const gd = await gRes.json();
-          const destCoords = { lat: gd.coord.lat, lon: gd.coord.lon };
-          distKm = haversineKm(coords, destCoords);
-          S.distKm = distKm;
-          if      (distKm <  5)  distClass = 'SHORT';
-          else if (distKm < 20)  distClass = 'MEDIUM';
-          else                   distClass = 'LONG';
-        }
-      } catch (_) {
-        // Destination geocode failed — proceed without distance
-      }
+    /* ── Step B: Calculate distance ── */
+    if (S.to && S.toCoords) {
+      distKm = haversineKm(coords, S.toCoords);
+      S.distKm = distKm;
+      if      (distKm <  5)  distClass = 'SHORT';
+      else if (distKm < 20)  distClass = 'MEDIUM';
+      else                   distClass = 'LONG';
     }
 
     /* ── Step B: Traffic (TomTom Flow → weather fallback) ── */
     if (tKey) {
       try {
-        // TomTom Flow Segment Data v4 — free, no credit card, 2500 req/day
-        // style=absolute, zoom=10, format=json
         const tUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=${tKey}&point=${coords.lat},${coords.lon}`;
         const tRes = await fetch(tUrl);
         if (!tRes.ok) {
@@ -1548,7 +1821,7 @@
         // TomTom failed — fall back to weather-based heuristic
         trafficState = inferTrafficFromWeather(weatherMeta);
         trafficMeta  = { source: 'weather-inferred', inferred: true };
-        toast(`Traffic: ${e.message} — estimating from weather instead.`, 'err');
+        toast(`Traffic lookup failed: ${e.message} — estimating from weather instead.`, 'err');
       }
     } else {
       // No key — infer from weather silently
