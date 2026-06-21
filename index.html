@@ -2625,25 +2625,68 @@ function _selectSuggestion(item) {
 /* ── Reverse geocode from map drag ──────────────── */
 async function _reverseGeocode(lat, lng, field) {
   const tKey = CFG.trafficKey;
-  // Default to a friendly generic label — never expose raw number strings to the user
-  let name = 'Selected location';
+  let name = null;
 
-  try {
-    if (tKey && typeof tt !== 'undefined' && tt.services) {
-      const res = await tt.services.reverseGeocode({
-        key: tKey,
-        position: { lat, lon: lng },
-        language: 'en-GB',
-      }).go();
-      const addr = res.addresses?.[0]?.address;
-      if (addr) {
-        // Prefer the street/POI name; fall back through progressively broader fields
-        name = addr.streetName && addr.municipalitySubdivision
-          ? `${addr.streetName}, ${addr.municipalitySubdivision}`
-          : addr.freeformAddress || addr.municipality || addr.countrySubdivision || name;
+  // Attempt 1: TomTom reverse geocode (if key is available)
+  if (tKey) {
+    try {
+      if (typeof tt !== 'undefined' && tt.services) {
+        const res = await tt.services.reverseGeocode({
+          key: tKey,
+          position: { lat, lon: lng },
+          language: 'en-GB',
+        }).go();
+        const addr = res.addresses?.[0]?.address;
+        if (addr) {
+          name = addr.streetName && addr.municipalitySubdivision
+            ? `${addr.streetName}, ${addr.municipalitySubdivision}`
+            : addr.freeformAddress || addr.municipality || addr.countrySubdivision || null;
+        }
       }
-    }
-  } catch (_) { /* silent — keep generic label */ }
+    } catch (_) { /* fall through to next method */ }
+  }
+
+  // Attempt 2: OpenStreetMap Nominatim — free, no key needed
+  if (!name) {
+    try {
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`;
+      const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.address) {
+          const a = data.address;
+          // Build a clean, human-readable label from the most specific fields available
+          const street  = a.road || a.pedestrian || a.footway || '';
+          const suburb  = a.suburb || a.neighbourhood || a.village || '';
+          const city    = a.city || a.town || a.municipality || a.county || '';
+          if (street && city)       name = `${street}, ${city}`;
+          else if (street && suburb) name = `${street}, ${suburb}`;
+          else if (suburb && city)  name = `${suburb}, ${city}`;
+          else                       name = data.display_name?.split(',').slice(0, 2).join(',').trim() || null;
+        }
+      }
+    } catch (_) { /* fall through */ }
+  }
+
+  // Attempt 3: OWM reverse geocode — needs weather key but works with just coords
+  if (!name && CFG.weatherKey) {
+    try {
+      const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lng}&limit=1&appid=${CFG.weatherKey}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.[0]) {
+          const r = data[0];
+          const n = (r.local_names?.en) || r.name;
+          const detail = [r.state, r.country].filter(Boolean).join(', ');
+          name = detail ? `${n}, ${detail}` : n;
+        }
+      }
+    } catch (_) { /* fall through */ }
+  }
+
+  // Last resort: clean coordinate string (rare but honest)
+  if (!name) name = `${lat.toFixed(4)}° N, ${Math.abs(lng).toFixed(4)}° E`;
 
   MAP_MODAL.pendingCoords = { lat, lon: lng, name };
   document.getElementById('mapSearchInput').value = name;
@@ -2655,11 +2698,9 @@ function _updateCenterPinCoords() {
   const field = MAP_MODAL.activeField;
   const inst  = MAP_MODAL.mapInstances[field];
   if (!inst) return;
-  const c    = inst.map.getCenter();
-  // Preserve the existing search text if any; never show raw numbers
-  const existingName = document.getElementById('mapSearchInput').value.trim() || 'Selected location';
-  MAP_MODAL.pendingCoords = { lat: c.lat, lon: c.lng, name: existingName };
-  document.getElementById('confirmLocBtn').disabled = false;
+  const c = inst.map.getCenter();
+  // Kick off a real reverse geocode for the current map center
+  _reverseGeocode(c.lat, c.lng, field);
 }
 
 /* ── Close suggestions ──────────────────────────── */
