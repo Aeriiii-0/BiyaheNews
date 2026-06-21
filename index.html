@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biyahe News — Smart Commuter Assistant</title>
+  <meta name="description" content="Personalized commute recommendations for students based on budget, energy, live weather and traffic.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ── DESIGN TOKENS ─────────────────────────────────── */
+    :root {
+      --bg:          #F2F5FB;
+      --surface:     #FFFFFF;
+      --surface-2:   #F7F9FD;
+      --border:      #E8EDF6;
+      --primary:     #7BB3F0;
+      --primary-dk:  #5A96DB;
+      --accent-lav:  #C3B5F5;
+      --accent-mint: #90DFC6;
+      --accent-peach:#F5C5A3;
+      --accent-rose: #F5B8C4;
+      --text:        #2D3A4A;
+      --text-2:      #6B7A90;
+      --text-3:      #A0AABB;
+      --shadow-sm:   0 2px 8px rgba(90,120,180,.07);
+      --shadow-md:   0 6px 24px rgba(90,120,180,.10);
+      --shadow-lg:   0 12px 40px rgba(90,120,180,.13);
+      --r-sm: 14px;
+      --r-md: 20px;
+      --r-lg: 26px;
+      --ease: cubic-bezier(.4,0,.2,1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Nunito',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      display:flex;flex-direction:column;
+    }
+
+    /* ── HEADER ──────────────────────────────────────── */
+    .site-header{
+      position:sticky;top:0;z-index:200;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:0 2rem;
+      display:flex;align-items:center;justify-content:space-between;
+      height:68px;gap:1.5rem;
+    }
+    .brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
+    .brand-icon{
+      width:40px;height:40px;border-radius:12px;
+      background:linear-gradient(135deg,var(--primary),var(--accent-lav));
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 12px rgba(123,179,240,.35);
+      flex-shrink:0;
+    }
+    .brand-text{display:flex;flex-direction:column;line-height:1.1;}
+    .brand-name{font-size:1.15rem;font-weight:900;color:var(--text);}
+    .brand-tagline{font-size:.72rem;font-weight:600;color:var(--text-2);}
+    .header-right{display:flex;align-items:center;gap:.75rem;}
+    .chip{
+      display:flex;align-items:center;gap:.45rem;
+      padding:.4rem .85rem;border-radius:50px;
+      font-size:.78rem;font-weight:700;
+      background:var(--surface-2);border:1px solid var(--border);
+      color:var(--text-2);white-space:nowrap;
+    }
+    .chip.live{background:#E6F7F0;border-color:#A7DFC9;color:#1E7A55;}
+    .chip.error{background:#FEF0EE;border-color:#F7C5BC;color:#C0392B;}
+    .chip-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
+    #live-clock{font-variant-numeric:tabular-nums;}
+
+    /* ── NAV TABS ─────────────────────────────────────── */
+    .nav-tabs{
+      display:flex;align-items:center;gap:.25rem;
+      background:var(--surface-2);border-radius:50px;padding:.25rem;
+      border:1px solid var(--border);
+    }
+    .nav-tab{
+      padding:.4rem 1rem;border-radius:50px;border:none;
+      font-family:inherit;font-size:.82rem;font-weight:700;
+      background:transparent;color:var(--text-2);cursor:pointer;
+      transition:all .2s var(--ease);
+    }
+    .nav-tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm);}
+    .nav-tab:hover:not(.active){color:var(--text);}
+
+    /* ── MAIN LAYOUT ─────────────────────────────────── */
+    .page{display:none;flex:1;}
+    .page.active{display:block;}
+    .main-grid{
+      max-width:1160px;margin:0 auto;
+      padding:2rem 1.5rem 4rem;
+      display:grid;
+      grid-template-columns:1fr 1.6fr;
+      gap:1.75rem;align-items:start;
+    }
+    @media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+
+    /* ── CARDS ───────────────────────────────────────── */
+    .card{
+      background:var(--surface);
+      border-radius:var(--r-lg);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-sm);
+      padding:1.75rem;
+      transition:box-shadow .2s var(--ease);
+    }
+    .card-head{
+      display:flex;align-items:center;gap:.6rem;
+      font-size:1rem;font-weight:800;
+      border-bottom:1px solid var(--border);
+      padding-bottom:1rem;margin-bottom:1.5rem;
+    }
+    .card-head-icon{
+      width:32px;height:32px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+
+    /* ── FORM ELEMENTS ───────────────────────────────── */
+    .form-group{margin-bottom:1.35rem;}
+    .form-label{
+      display:flex;align-items:center;gap:.4rem;
+      font-size:.85rem;font-weight:800;color:var(--text);
+      margin-bottom:.55rem;
+    }
+    .lbl-icon{
+      width:22px;height:22px;border-radius:7px;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+    .text-input{
+      width:100%;padding:.75rem 1rem;
+      border-radius:var(--r-sm);
+      border:1.5px solid var(--border);
+      background:var(--surface-2);
+      font-family:inherit;font-size:.95rem;
+      font-weight:600;color:var(--text);
+      transition:all .18s var(--ease);
+    }
+    .text-input:focus{
+      outline:none;border-color:var(--primary);
+      background:var(--surface);
+      box-shadow:0 0 0 3px rgba(123,179,240,.18);
+    }
+    .text-input::placeholder{color:var(--text-3);font-weight:500;}
+
+    /* budget row */
+    .budget-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;}
+    .peso-badge{
+      font-size:1rem;font-weight:800;color:var(--text-2);
+      background:var(--surface-2);border:1.5px solid var(--border);
+      padding:.6rem .8rem;border-radius:var(--r-sm);flex-shrink:0;
+    }
+    .budget-tier{
+      margin-left:auto;padding:.25rem .75rem;border-radius:50px;
+      font-size:.75rem;font-weight:800;letter-spacing:.3px;
+    }
+    .tier-low  {background:#FDECEA;color:#C0392B;}
+    .tier-norm {background:#FEF9E7;color:#B7860D;}
+    .tier-high {background:#EAF7F0;color:#1A7A4A;}
+    .range-slider{
+      -webkit-appearance:none;width:100%;height:6px;
+      border-radius:3px;background:var(--border);outline:none;cursor:pointer;
+    }
+    .range-slider::-webkit-slider-thumb{
+      -webkit-appearance:none;width:18px;height:18px;
+      border-radius:50%;background:var(--primary);
+      border:2.5px solid #fff;box-shadow:0 2px 6px rgba(90,150,220,.25);
+      cursor:pointer;transition:transform .12s;
+    }
+    .range-slider::-webkit-slider-thumb:hover{transform:scale(1.25);}
+
+    /* energy cards */
+    .energy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;}
+    .energy-option input[type="radio"]{position:absolute;opacity:0;width:0;height:0;}
+    .energy-option{position:relative;}
+    .energy-label{
+      display:flex;flex-direction:column;align-items:center;
+      gap:.35rem;padding:.9rem .5rem;
+      border-radius:var(--r-md);border:2px solid var(--border);
+      background:var(--surface-2);cursor:pointer;
+      font-size:.8rem;font-weight:700;text-align:center;
+      transition:all .18s var(--ease);user-select:none;
+    }
+    .energy-emoji{font-size:1.4rem;transition:transform .18s;}
+    .energy-option input:checked + .energy-label{
+      border-color:var(--primary);background:var(--surface);
+      color:var(--primary-dk);box-shadow:0 4px 14px rgba(123,179,240,.2);
+    }
+    .energy-option input:checked + .energy-label .energy-emoji{transform:scale(1.2) rotate(-5deg);}
+    .energy-label:hover{background:var(--surface);border-color:var(--primary);}
+
+    /* ── ACTION BUTTON ───────────────────────────────── */
+    .btn-primary{
+      width:100%;padding:1rem 1.5rem;
+      border:none;border-radius:var(--r-md);
+      background:linear-gradient(135deg,var(--primary),var(--primary-dk));
+      color:#fff;font-family:inherit;font-size:1rem;font-weight:800;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.55rem;
+      box-shadow:0 5px 18px rgba(91,150,220,.28);
+      transition:all .2s var(--ease);position:relative;overflow:hidden;
+      margin-top:1.25rem;
+    }
+    .btn-primary::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+      transform:translateX(-100%);transition:transform .5s;
+    }
+    .btn-primary:hover{transform:translateY(-2px) scale(1.015);box-shadow:0 8px 26px rgba(91,150,220,.38);}
+    .btn-primary:hover::after{transform:translateX(100%);}
+    .btn-primary:active{transform:translateY(1px) scale(.99);}
+    .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .spinner{
+      width:1.1rem;height:1.1rem;border-radius:50%;
+      border:2.5px solid rgba(255,255,255,.3);
+      border-top-color:#fff;animation:spin .7s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── API KEY PANEL ───────────────────────────────── */
+    .key-panel{
+      margin-top:1.25rem;border-radius:var(--r-md);
+      border:1.5px dashed var(--border);overflow:hidden;
+    }
+    .key-panel-head{
+      padding:.85rem 1.1rem;background:var(--surface-2);
+      display:flex;align-items:center;justify-content:space-between;
+      cursor:pointer;font-size:.82rem;font-weight:700;color:var(--text-2);
+      user-select:none;transition:background .15s;
+    }
+    .key-panel-head:hover{background:var(--border);}
+    .key-arrow{font-size:.7rem;transition:transform .25s;}
+    .key-panel.open .key-arrow{transform:rotate(180deg);}
+    .key-panel-body{
+      max-height:0;overflow:hidden;background:var(--surface);
+      transition:max-height .3s cubic-bezier(0,1,0,1);
+    }
+    .key-panel.open .key-panel-body{max-height:360px;transition:max-height .35s cubic-bezier(1,0,1,0);}
+    .key-panel-inner{padding:1.1rem;border-top:1px dashed var(--border);}
+    .key-note{font-size:.75rem;color:var(--text-2);font-weight:600;margin-bottom:.9rem;line-height:1.5;}
+    .key-input{
+      width:100%;padding:.65rem .9rem;
+      border-radius:var(--r-sm);border:1.5px solid var(--border);
+      font-family:monospace;font-size:.83rem;background:var(--surface-2);
+      color:var(--text);margin-bottom:.75rem;transition:border-color .15s;
+    }
+    .key-input:focus{outline:none;border-color:var(--primary);}
+    .btn-ghost{
+      width:100%;padding:.65rem;border:1.5px solid var(--border);
+      border-radius:var(--r-sm);background:transparent;
+      font-family:inherit;font-size:.82rem;font-weight:700;
+      color:var(--text);cursor:pointer;transition:all .15s;
+    }
+    .btn-ghost:hover{background:var(--surface-2);border-color:var(--primary);}
+
+    /* ── BROADCAST PANEL (right col) ─────────────────── */
+    .broadcast-col{display:flex;flex-direction:column;gap:1.25rem;}
+
+    /* waiting state */
+    .waiting-card{
+      border:2px dashed var(--border);
+      border-radius:var(--r-lg);
+      background:rgba(255,255,255,.5);
+      padding:3.5rem 2rem;
+      display:flex;flex-direction:column;align-items:center;
+      text-align:center;gap:.9rem;
+    }
+    .waiting-illo{animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .waiting-title{font-size:1.2rem;font-weight:800;color:var(--text);}
+    .waiting-sub{font-size:.9rem;color:var(--text-2);max-width:300px;font-weight:500;}
+
+    /* result card */
+    .result-card{
+      display:none;border-radius:var(--r-lg);padding:0;
+      overflow:hidden;border:1.5px solid transparent;
+    }
+    .result-card.visible{display:flex;flex-direction:column;}
+    .slide-in{animation:slideIn .4s cubic-bezier(.16,1,.3,1) forwards;}
+    @keyframes slideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    /* card accent themes */
+    .result-card.stay  {background:#FFF8EC;border-color:#F5DFA0;}
+    .result-card.active{background:#EDF7ED;border-color:#B3DDB3;}
+    .result-card.optimal{background:#EBF5FE;border-color:#A8D8F0;}
+    .result-card.welfare{background:#EBF5FE;border-color:#A8D8F0;}
+
+    .rc-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.25rem 1.5rem;border-bottom:1.5px dashed rgba(0,0,0,.06);
+    }
+    .rc-badge{
+      display:flex;align-items:center;gap:.4rem;
+      padding:.3rem .85rem;border-radius:50px;
+      font-size:.78rem;font-weight:800;
+      background:rgba(255,255,255,.8);box-shadow:var(--shadow-sm);
+    }
+    .rc-time{font-size:.78rem;font-weight:700;opacity:.65;}
+
+    .rc-body{padding:1.5rem;}
+    .rc-action{font-size:1.4rem;font-weight:900;margin-bottom:.6rem;line-height:1.25;}
+    .rc-justify{font-size:.95rem;font-weight:600;line-height:1.6;opacity:.9;}
+
+    .tip-box{
+      background:rgba(255,255,255,.65);border-left:4px solid currentColor;
+      border-radius:var(--r-sm);padding:1rem 1.25rem;margin-top:1.1rem;
+    }
+    .tip-label{
+      font-size:.72rem;font-weight:800;text-transform:uppercase;
+      letter-spacing:.5px;margin-bottom:.3rem;opacity:.75;
+      display:flex;align-items:center;gap:.3rem;
+    }
+    .tip-text{font-size:.9rem;font-weight:600;line-height:1.6;}
+
+    /* live data dashboard inside result */
+    .rc-dash{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:.9rem;padding:0 1.5rem 1.5rem;
+    }
+    .dash-item{
+      background:rgba(255,255,255,.6);border-radius:var(--r-sm);
+      padding:.9rem 1rem;
+    }
+    .dash-lbl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.6;margin-bottom:.3rem;}
+    .dash-val{font-size:1rem;font-weight:800;display:flex;align-items:center;gap:.35rem;}
+    .dash-sub{font-size:.72rem;font-weight:600;opacity:.55;margin-top:.15rem;}
+    .speed-bar{height:5px;border-radius:3px;background:rgba(0,0,0,.08);margin-top:.5rem;overflow:hidden;}
+    .speed-fill{height:100%;border-radius:3px;transition:width .5s var(--ease);}
+
+    /* ── ABOUT PAGE ──────────────────────────────────── */
+    .about-wrap{max-width:760px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+    .about-hero{
+      background:linear-gradient(135deg,#EEF4FF,#F5EFFE);
+      border-radius:var(--r-lg);padding:2.5rem 2rem;
+      text-align:center;margin-bottom:2rem;
+      border:1px solid var(--border);
+    }
+    .about-hero h1{font-size:1.8rem;font-weight:900;margin:.9rem 0 .5rem;}
+    .about-hero p{color:var(--text-2);font-weight:600;font-size:.95rem;max-width:500px;margin:0 auto;line-height:1.65;}
+    .about-section{margin-bottom:2.25rem;}
+    .about-section h2{font-size:1rem;font-weight:800;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+
+    /* prose paragraphs */
+    .about-prose{display:flex;flex-direction:column;gap:.75rem;}
+    .about-prose p{font-size:.9rem;font-weight:600;color:var(--text-2);line-height:1.7;}
+    .about-prose em{font-style:italic;color:var(--text);}
+
+    /* detail cards (one per input) */
+    .about-cards{display:flex;flex-direction:column;gap:.85rem;}
+    .about-detail-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-md);padding:1.1rem 1.25rem;
+    }
+    .adc-head{
+      display:flex;align-items:center;gap:.6rem;
+      font-size:.9rem;font-weight:800;margin-bottom:.6rem;
+    }
+    .adc-num{
+      width:28px;height:28px;border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.85rem;font-weight:800;flex-shrink:0;
+    }
+    .about-detail-card p{font-size:.85rem;font-weight:600;color:var(--text-2);line-height:1.7;}
+    .about-detail-card strong{color:var(--text);}
+
+    /* matrix table */
+    .matrix-table{
+      border:1px solid var(--border);border-radius:var(--r-md);
+      overflow:hidden;font-size:.8rem;
+    }
+    .matrix-row{
+      display:grid;grid-template-columns:1.2fr .7fr .9fr .8fr .8fr 2fr;
+      gap:0;border-bottom:1px solid var(--border);
+    }
+    .matrix-row:last-child{border-bottom:none;}
+    .matrix-row span{padding:.65rem .75rem;font-weight:600;color:var(--text-2);border-right:1px solid var(--border);line-height:1.45;}
+    .matrix-row span:last-child{border-right:none;}
+    .matrix-row.header span{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;background:var(--surface-2);color:var(--text-3);}
+    .mc-label{font-weight:800 !important;color:var(--text) !important;}
+    .matrix-row.stay  {background:#FFFDF5;}
+    .matrix-row.active{background:#F7FBF5;}
+    .matrix-row.welfare,.matrix-row.optimal{background:#F5FBFF;}
+    @media(max-width:680px){
+      .matrix-row{grid-template-columns:1fr;border-bottom:2px solid var(--border);}
+      .matrix-row span{border-right:none;border-bottom:1px solid var(--border);}
+      .matrix-row span:last-child{border-bottom:none;}
+      .matrix-row.header{display:none;}
+    }
+    .api-badge-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.6rem;}
+    .api-pill{
+      display:flex;align-items:center;gap:.4rem;
+      padding:.35rem .85rem;border-radius:50px;
+      font-size:.78rem;font-weight:700;
+      border:1.5px solid var(--border);background:var(--surface-2);
+    }
+
+    /* ── SETTINGS PAGE ───────────────────────────────── */
+    .settings-wrap{max-width:680px;margin:0 auto;padding:3rem 1.5rem 5rem;}
+    .settings-wrap h1{font-size:1.4rem;font-weight:900;margin-bottom:1.75rem;}
+    .settings-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-lg);margin-bottom:1.25rem;overflow:hidden;
+    }
+    .settings-card-head{padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);font-size:.9rem;font-weight:800;}
+    .settings-card-body{padding:1.25rem 1.5rem;}
+    .key-row{margin-bottom:1rem;}
+    .key-row label{display:block;font-size:.8rem;font-weight:800;color:var(--text-2);margin-bottom:.35rem;}
+    .settings-note{font-size:.78rem;color:var(--text-2);font-weight:600;line-height:1.55;margin-bottom:1rem;}
+    .status-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--border);}
+    .status-row:last-child{border-bottom:none;}
+    .status-row-label{font-size:.88rem;font-weight:700;}
+    .status-dot{
+      width:9px;height:9px;border-radius:50%;background:var(--text-3);
+      display:inline-block;margin-right:.4rem;
+    }
+    .status-dot.ok{background:#2ECC71;}
+    .status-dot.warn{background:#F39C12;}
+
+    /* ── TOAST ───────────────────────────────────────── */
+    #toasts{
+      position:fixed;bottom:1.75rem;right:1.75rem;
+      display:flex;flex-direction:column;gap:.6rem;z-index:9999;pointer-events:none;
+    }
+    .toast{
+      background:var(--text);color:#fff;
+      padding:.75rem 1.2rem;border-radius:var(--r-sm);
+      font-size:.85rem;font-weight:700;
+      display:flex;align-items:center;gap:.5rem;
+      box-shadow:0 6px 20px rgba(0,0,0,.18);pointer-events:auto;
+      border-left:4px solid var(--primary);
+      opacity:0;transform:translateY(10px);
+      animation:toastIn .28s var(--ease) forwards;
+    }
+    .toast.ok{border-color:var(--accent-mint);}
+    .toast.err{border-color:var(--accent-rose);}
+    .toast.out{animation:toastOut .25s var(--ease) forwards;}
+    @keyframes toastIn{to{opacity:1;transform:translateY(0)}}
+    @keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+
+    /* ── ROUTE BOX ───────────────────────────────────── */
+    .route-box{
+      background:var(--surface-2);border:1.5px solid var(--border);
+      border-radius:var(--r-md);padding:.9rem 1rem;
+      display:flex;flex-direction:column;gap:0;
+    }
+    .route-field{display:flex;align-items:center;gap:.75rem;}
+    .route-dot{
+      width:11px;height:11px;border-radius:50%;flex-shrink:0;
+      border:2.5px solid;
+    }
+    .route-dot.from{border-color:var(--primary);background:#fff;}
+    .route-dot.to  {border-color:var(--accent-rose);background:var(--accent-rose);}
+    .route-field-inner{flex:1;display:flex;flex-direction:column;gap:.15rem;}
+    .route-field-lbl{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--text-3);}
+    .route-input{
+      background:transparent;border:none;border-radius:0;
+      padding:.15rem 0;font-size:.95rem;font-weight:700;
+      box-shadow:none;border-bottom:1.5px solid var(--border);
+    }
+    .route-input:focus{border-bottom-color:var(--primary);box-shadow:none;background:transparent;}
+    .route-connector{
+      display:flex;align-items:center;gap:.5rem;
+      padding:.3rem 0 .3rem 4.5px;
+    }
+    .connector-line{width:1.5px;height:18px;background:var(--border);margin-left:.05rem;}
+
+    /* route strip in result card */
+    .rc-route{
+      display:flex;align-items:center;gap:.55rem;
+      font-size:.82rem;font-weight:700;
+      background:rgba(255,255,255,.55);
+      border-radius:50px;padding:.3rem .85rem .3rem .6rem;
+      margin-bottom:.75rem;width:fit-content;
+      border:1px solid rgba(0,0,0,.06);
+    }
+    .rc-route-from{
+      display:flex;align-items:center;gap:.3rem;
+    }
+    .rc-route-from::before{
+      content:'';display:inline-block;width:8px;height:8px;
+      border-radius:50%;border:2px solid var(--primary);background:#fff;flex-shrink:0;
+    }
+    .rc-route-to{
+      display:flex;align-items:center;gap:.3rem;
+    }
+    .rc-route-to::before{
+      content:'';display:inline-block;width:8px;height:8px;
+      border-radius:50%;background:var(--accent-rose);flex-shrink:0;
+    }
+
+    /* ── TRAFFIC STATUS STATES ───────────────────────── */
+    .traffic-state-box{
+      display:flex;align-items:center;gap:.65rem;
+      padding:.65rem .9rem;border-radius:var(--r-sm);
+      font-size:.82rem;font-weight:700;margin-top:.5rem;
+    }
+    .traffic-state-box.ok  {background:#E6F7F0;color:#1E7A55;}
+    .traffic-state-box.warn{background:#FFF8EC;color:#7A5800;}
+    .traffic-state-box.err {background:#FEF0EE;color:#A93226;}
+
+    /* ── KEY INPUT ROW ───────────────────────────────── */
+    .alert-banner{
+      display:flex;gap:.65rem;align-items:flex-start;
+      padding:1rem 1.1rem;border-radius:var(--r-md);
+      font-size:.83rem;font-weight:600;line-height:1.55;
+      margin-bottom:1.25rem;border:1.5px solid;
+    }
+    .alert-banner.warn{background:#FFF8EC;border-color:#F5DFA0;color:#7A5800;}
+    .alert-banner-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem;}
+    .alert-banner a{color:inherit;font-weight:800;}
+    .key-input-row{display:flex;gap:.5rem;align-items:center;}
+    .key-input-row .key-input{flex:1;margin-bottom:0;}
+    .btn-icon{
+      flex-shrink:0;width:38px;height:38px;border-radius:var(--r-sm);
+      border:1.5px solid var(--border);background:var(--surface-2);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text-2);transition:all .15s;
+    }
+    .btn-icon:hover{background:var(--border);color:var(--text);}
+    .key-saved-badge{
+      display:inline-flex;align-items:center;gap:.35rem;
+      padding:.25rem .7rem;border-radius:50px;
+      font-size:.72rem;font-weight:800;
+      background:#E6F7F0;color:#1E7A55;border:1px solid #A7DFC9;
+      margin-left:.5rem;vertical-align:middle;
+    }
+    .api-link{
+      display:inline-flex;align-items:center;gap:.35rem;
+      padding:.45rem .9rem;border-radius:50px;
+      font-size:.8rem;font-weight:700;
+      background:var(--surface-2);border:1.5px solid var(--border);
+      color:var(--primary-dk);text-decoration:none;
+      transition:all .15s;margin-bottom:.9rem;
+    }
+    .api-link:hover{background:#EEF4FF;border-color:var(--primary);color:var(--primary-dk);}
+    .steps{list-style:none;padding:0;margin:.5rem 0 1rem;display:flex;flex-direction:column;gap:.4rem;}
+    .steps li{
+      font-size:.8rem;font-weight:600;color:var(--text-2);
+      display:flex;align-items:flex-start;gap:.5rem;line-height:1.5;
+    }
+    .step-num{
+      flex-shrink:0;width:18px;height:18px;border-radius:50%;
+      background:var(--primary);color:#fff;
+      font-size:.65rem;font-weight:800;
+      display:flex;align-items:center;justify-content:center;margin-top:.1rem;
+    }
+    .persist-note{
+      display:flex;align-items:flex-start;gap:.55rem;
+      background:#F5EFFE;border:1px solid #DDD5FB;
+      border-radius:var(--r-sm);padding:.8rem 1rem;
+      font-size:.8rem;font-weight:600;color:#5A44B5;
+      margin-bottom:1.25rem;line-height:1.5;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    .site-footer{
+      text-align:center;padding:1.5rem 2rem;
+      border-top:1px solid var(--border);background:var(--surface);
+      font-size:.78rem;font-weight:600;color:var(--text-2);
+      margin-top:auto;
+    }
+
+    /* ── RESPONSIVE TWEAKS ───────────────────────────── */
+    @media(max-width:600px){
+      .site-header{padding:0 1rem;}
+      .brand-tagline{display:none;}
+      .main-grid{padding:1.25rem 1rem 3rem;}
+      .card{padding:1.25rem;}
+      .nav-tabs .nav-tab span.tab-label{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="site-header">
+  <a class="brand" href="#">
+    <div class="brand-icon" aria-hidden="true">
+      <!-- bus SVG icon -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="20" height="13" rx="3" fill="white" fill-opacity=".9"/>
+        <rect x="2" y="5" width="20" height="8" rx="3" fill="white" fill-opacity=".15"/>
+        <circle cx="7" cy="18.5" r="1.5" fill="white"/>
+        <circle cx="17" cy="18.5" r="1.5" fill="white"/>
+        <path d="M7 9h10M2 13h20" stroke="rgba(123,179,240,.6)" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">Biyahe News</span>
+      <span class="brand-tagline">Your daily commute broadcast</span>
+    </div>
+  </a>
+
+  <nav class="nav-tabs" role="tablist" aria-label="Main navigation">
+    <button class="nav-tab active" data-page="home" role="tab" aria-selected="true">
+      <!-- home icon -->
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><path d="M3 9L12 2l9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="tab-label">Home</span>
+    </button>
+    <button class="nav-tab" data-page="settings" role="tab" aria-selected="false">
+      <!-- settings icon -->
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span class="tab-label">API Keys</span>
+    </button>
+    <button class="nav-tab" data-page="about" role="tab" aria-selected="false">
+      <!-- info icon -->
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span class="tab-label">About</span>
+    </button>
+  </nav>
+
+  <div class="header-right">
+    <div class="chip" id="live-clock">
+      <!-- clock icon -->
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span id="clock-text">--:--</span>
+    </div>
+    <div class="chip" id="api-status-chip">
+      <span class="chip-dot"></span>
+      <span id="api-status-text">No Keys</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div class="page active" id="page-home" role="tabpanel">
+  <div class="main-grid">
+
+    <!-- LEFT: INPUT CARD -->
+    <section class="card" aria-label="Commuter conditions form">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:#EEF4FF;">
+          <!-- clipboard icon -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+        </div>
+        Commuter Conditions
+      </div>
+
+      <form id="evalForm" onsubmit="return false;">
+
+        <!-- Route: From / To -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="lbl-icon" style="background:#EEF4FF;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            Your Route
+          </label>
+          <div class="route-box">
+            <!-- From -->
+            <div class="route-field">
+              <div class="route-dot from"></div>
+              <div class="route-field-inner">
+                <span class="route-field-lbl">From</span>
+                <input class="text-input route-input" type="text" id="fromInput" value="Biñan" placeholder="Origin city / place" required>
+              </div>
+            </div>
+            <!-- Dashed connector -->
+            <div class="route-connector" aria-hidden="true">
+              <div class="connector-line"></div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </div>
+            <!-- To -->
+            <div class="route-field">
+              <div class="route-dot to"></div>
+              <div class="route-field-inner">
+                <span class="route-field-lbl">To</span>
+                <input class="text-input route-input" type="text" id="toInput" value="" placeholder="Destination city / place" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="lbl-icon" style="background:#FEF6EE;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5A75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </span>
+            Remaining Budget
+            <span class="budget-tier tier-norm" id="budgetTier">Normal</span>
+          </label>
+          <div class="budget-row">
+            <span class="peso-badge">₱</span>
+            <input class="text-input" type="number" id="budgetInput" value="150" min="0" max="1000" step="5" aria-label="Budget in pesos">
+          </div>
+          <input class="range-slider" type="range" id="budgetSlider" value="150" min="0" max="500" step="5" aria-label="Budget slider">
+        </div>
+
+        <!-- Energy -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="lbl-icon" style="background:#F5EFFE;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C3B5F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </span>
+            Your Energy Level
+          </label>
+          <div class="energy-grid">
+            <div class="energy-option">
+              <input type="radio" name="energy" id="eExhausted" value="EXHAUSTED">
+              <label class="energy-label" for="eExhausted">
+                <span class="energy-emoji">😩</span>Exhausted
+              </label>
+            </div>
+            <div class="energy-option">
+              <input type="radio" name="energy" id="eNormal" value="NORMAL" checked>
+              <label class="energy-label" for="eNormal">
+                <span class="energy-emoji">😌</span>Normal
+              </label>
+            </div>
+            <div class="energy-option">
+              <input type="radio" name="energy" id="eEnergized" value="ENERGIZED">
+              <label class="energy-label" for="eEnergized">
+                <span class="energy-emoji">⚡</span>Energized
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Button -->
+        <button type="button" class="btn-primary" id="evalBtn" onclick="runEvaluation()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.13 1.17 2 2 0 012.11 1H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.9a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15z"/></svg>
+          <span id="evalBtnText">Get My Commute Plan</span>
+        </button>
+
+      </form>
+    </section>
+
+    <!-- RIGHT: RESULT COLUMN -->
+    <section class="broadcast-col" aria-label="Commute recommendation">
+
+      <!-- Waiting illustration -->
+      <div class="waiting-card" id="waitingCard">
+        <!-- SVG bus illustration -->
+        <svg class="waiting-illo" width="110" height="80" viewBox="0 0 110 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="8" y="18" width="80" height="44" rx="10" fill="#C3B5F5" fill-opacity=".3"/>
+          <rect x="8" y="18" width="80" height="44" rx="10" stroke="#C3B5F5" stroke-width="2"/>
+          <rect x="18" y="28" width="16" height="12" rx="3" fill="#7BB3F0" fill-opacity=".5"/>
+          <rect x="40" y="28" width="16" height="12" rx="3" fill="#7BB3F0" fill-opacity=".5"/>
+          <rect x="62" y="28" width="16" height="12" rx="3" fill="#7BB3F0" fill-opacity=".5"/>
+          <circle cx="22" cy="64" r="7" fill="#F5C5A3" stroke="#e8a070" stroke-width="1.5"/>
+          <circle cx="66" cy="64" r="7" fill="#F5C5A3" stroke="#e8a070" stroke-width="1.5"/>
+          <rect x="84" y="30" width="18" height="10" rx="3" fill="#90DFC6" fill-opacity=".4"/>
+          <path d="M88 35l4 0M90 33l0 4" stroke="#1E7A55" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- road lines -->
+          <rect x="0" y="73" width="110" height="7" rx="3.5" fill="#E8EDF6"/>
+          <rect x="12" y="75.5" width="16" height="2" rx="1" fill="#C3B5F5"/>
+          <rect x="46" y="75.5" width="16" height="2" rx="1" fill="#C3B5F5"/>
+          <rect x="80" y="75.5" width="16" height="2" rx="1" fill="#C3B5F5"/>
+        </svg>
+        <p class="waiting-title">Waiting for your signal</p>
+        <p class="waiting-sub">Fill in your budget and energy level, then tap the button to get your personalized commute plan.</p>
+      </div>
+
+      <!-- Result card (shown after evaluation) -->
+      <div class="result-card" id="resultCard" role="region" aria-live="polite">
+        <div class="rc-header">
+          <span class="rc-badge">
+            <span id="rcIcon">📻</span>
+            <span id="rcTitle">Commute Broadcast</span>
+          </span>
+          <span class="rc-time" id="rcTime"></span>
+        </div>
+        <div class="rc-body">
+          <div class="rc-route" id="rcRoute" style="display:none">
+            <span class="rc-route-from" id="rcFrom"></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;opacity:.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <span class="rc-route-to" id="rcTo"></span>
+          </div>
+          <div class="rc-action" id="rcAction"></div>
+          <div class="rc-justify" id="rcJustify"></div>
+          <div class="tip-box">
+            <div class="tip-label">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Commute Tip
+            </div>
+            <div class="tip-text" id="rcTip"></div>
+          </div>
+        </div>
+        <div class="rc-dash">
+          <div class="dash-item">
+            <div class="dash-lbl">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><path d="M17.5 19H9a7 7 0 117-7h3.5"/><polyline points="17.5 19 21 16 17.5 13 21 10 17.5 7"/></svg>
+              Weather
+            </div>
+            <div class="dash-val" id="dashWeather">—</div>
+            <div class="dash-sub" id="dashWeatherSub"></div>
+          </div>
+          <div class="dash-item">
+            <div class="dash-lbl">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><line x1="13" y1="16" x2="17" y2="16"/></svg>
+              Traffic
+            </div>
+            <div class="dash-val" id="dashTraffic">—</div>
+            <div class="dash-sub" id="dashTrafficSub"></div>
+            <div class="speed-bar" id="speedBar" style="display:none"><div class="speed-fill" id="speedFill"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</div><!-- /home page -->
+
+<!-- ══════════════ SETTINGS PAGE ══════════════ -->
+<div class="page" id="page-settings" role="tabpanel">
+  <div class="settings-wrap">
+    <h1>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:.4rem"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      API Keys
+    </h1>
+
+    <!-- Persist note -->
+    <div class="persist-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Keys are saved in your browser's local storage — you only need to enter them once. They'll be here every time you open the app.
+    </div>
+
+    <!-- OpenWeatherMap Card -->
+    <div class="settings-card">
+      <div class="settings-card-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.4rem"><path d="M17.5 19H9a7 7 0 117-7h3.5"/><polyline points="17.5 19 21 16 17.5 13 21 10 17.5 7"/></svg>
+        OpenWeatherMap — Weather API
+        <span id="wSavedBadge" class="key-saved-badge" style="display:none">✓ Saved</span>
+      </div>
+      <div class="settings-card-body">
+        <!-- activation warning banner (shown on 401) -->
+        <div id="wKeyBanner" class="alert-banner warn" style="display:none">
+          <span class="alert-banner-icon">⏳</span>
+          <div>
+            <strong>Key not active yet.</strong> New OpenWeatherMap keys take <strong>10–120 minutes</strong> to activate after signup — this is normal. Come back in a bit and try again. If it's been over 2 hours, double-check you copied the full key with no extra spaces.
+            <br><a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener">→ Check your API keys page</a>
+          </div>
+        </div>
+        <!-- Direct link to signup -->
+        <a class="api-link" href="https://home.openweathermap.org/users/sign_up" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Create free account at openweathermap.org
+        </a>
+        <ul class="steps">
+          <li><span class="step-num">1</span>Sign up for a free account at the link above</li>
+          <li><span class="step-num">2</span>Go to your profile → <strong>API keys</strong> tab</li>
+          <li><span class="step-num">3</span>Copy the <em>Default</em> key (or generate a new one)</li>
+          <li><span class="step-num">4</span>Paste it below and hit Save</li>
+        </ul>
+        <div class="key-row">
+          <label for="wKeyInput">Your API Key (appid)</label>
+          <div class="key-input-row">
+            <input class="key-input" type="password" id="wKeyInput" placeholder="e.g. a1b2c3d4e5f6…">
+            <button class="btn-icon" type="button" onclick="toggleKeyVis('wKeyInput', this)" title="Show/hide key" aria-label="Toggle key visibility">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TomTom Traffic Card -->
+    <div class="settings-card">
+      <div class="settings-card-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#90DFC6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.4rem"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>
+        TomTom — Traffic Flow API
+        <span id="tSavedBadge" class="key-saved-badge" style="display:none">✓ Saved</span>
+      </div>
+      <div class="settings-card-body">
+        <div class="traffic-state-box ok" style="margin-bottom:.75rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          100% free — no credit card needed. 2,500 free requests per day.
+        </div>
+        <a class="api-link" href="https://developer.tomtom.com/user/register" target="_blank" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Register free at developer.tomtom.com
+        </a>
+        <ul class="steps">
+          <li><span class="step-num">1</span>Click the link above — register with just an email, no card asked</li>
+          <li><span class="step-num">2</span>After signing in, go to <strong>Dashboard → My Apps</strong></li>
+          <li><span class="step-num">3</span>Click <strong>New App</strong> → check <em>Traffic</em> → create</li>
+          <li><span class="step-num">4</span>Copy the API key shown, paste it below, and hit Save</li>
+        </ul>
+        <div class="key-row">
+          <label for="tKeyInput">Your TomTom API Key</label>
+          <div class="key-input-row">
+            <input class="key-input" type="password" id="tKeyInput" placeholder="e.g. a1b2c3d4e5f6…">
+            <button class="btn-icon" type="button" onclick="toggleKeyVis('tKeyInput', this)" title="Show/hide key" aria-label="Toggle key visibility">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="traffic-state-box warn" style="margin-top:.75rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          No key? The app estimates traffic from live weather — rain = likely congestion. Less precise but still useful.
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" type="button" onclick="saveKeys()" style="max-width:240px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save Keys
+    </button>
+
+    <!-- Status -->
+    <div class="settings-card" style="margin-top:1.5rem">
+      <div class="settings-card-head">Connection Status</div>
+      <div class="settings-card-body">
+        <div class="status-row">
+          <span class="status-row-label"><span class="status-dot" id="dotWeather"></span>Weather API</span>
+          <span id="statusWeatherText" style="font-size:.8rem;font-weight:700;color:var(--text-2)">Not configured</span>
+        </div>
+        <div class="status-row">
+          <span class="status-row-label"><span class="status-dot" id="dotTraffic"></span>Traffic API</span>
+          <span id="statusTrafficText" style="font-size:.8rem;font-weight:700;color:var(--text-2)">Not configured — using weather fallback</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /settings -->
+
+<!-- ══════════════ ABOUT PAGE ══════════════ -->
+<div class="page" id="page-about" role="tabpanel">
+  <div class="about-wrap">
+
+    <!-- Hero -->
+    <div class="about-hero">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="64" height="64" rx="18" fill="#EEF4FF"/>
+        <rect x="10" y="18" width="44" height="28" rx="7" fill="#7BB3F0" fill-opacity=".25"/>
+        <rect x="10" y="18" width="44" height="28" rx="7" stroke="#7BB3F0" stroke-width="2"/>
+        <rect x="18" y="25" width="10" height="8" rx="2.5" fill="#7BB3F0" fill-opacity=".6"/>
+        <rect x="32" y="25" width="10" height="8" rx="2.5" fill="#C3B5F5" fill-opacity=".7"/>
+        <circle cx="18" cy="48" r="4.5" fill="#F5C5A3" stroke="#e8a070" stroke-width="1.5"/>
+        <circle cx="46" cy="48" r="4.5" fill="#F5C5A3" stroke="#e8a070" stroke-width="1.5"/>
+        <path d="M10 32h44" stroke="#7BB3F0" stroke-width="1.5" stroke-dasharray="3 3"/>
+      </svg>
+      <h1>Biyahe News</h1>
+      <p>A smart commute planner built for Filipino students who need to get home on a tight budget, in unpredictable weather, and through heavy traffic — every single day.</p>
+    </div>
+
+    <!-- What it does -->
+    <div class="about-section">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        What this app does
+      </h2>
+      <div class="about-prose">
+        <p>Most commuter apps just tell you how long a route takes. Biyahe News is different — it tells you <em>what you should actually do right now</em>, given your specific situation.</p>
+        <p>It takes four real factors about your day — your remaining budget, your physical energy level, current weather at your location, and live road congestion — and cross-references them against a decision matrix to produce a single, clear action plan. Not just a route. An actual recommendation: leave now, wait it out, walk around the jam, or spend a little more to get home safe.</p>
+        <p>The goal is to help you avoid the two most expensive mistakes a commuter student makes: paying surge prices when you're already broke, and pushing through bad conditions when your body can't handle it.</p>
+      </div>
+    </div>
+
+    <!-- Inputs explained -->
+    <div class="about-section">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3B5F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        The four inputs — and why they matter
+      </h2>
+      <div class="about-cards">
+        <div class="about-detail-card">
+          <div class="adc-head">
+            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">₱</span>
+            <span>Remaining Budget</span>
+          </div>
+          <p>Split into three tiers: <strong>Low</strong> (under ₱100), <strong>Normal</strong> (₱100–₱250), and <strong>High</strong> (above ₱250). Budget directly controls whether you can absorb the cost of a ride-hailing app, a direct taxi, or whether you're limited to jeepney fare only. A low budget under bad conditions is the highest-risk scenario — it removes your financial safety net at exactly the moment you might need it most.</p>
+        </div>
+        <div class="about-detail-card">
+          <div class="adc-head">
+            <span class="adc-num" style="background:#F5EFFE;color:#9B87E0;">⚡</span>
+            <span>Energy Level</span>
+          </div>
+          <p>Exhausted, Normal, or Energized. This input exists because physical fatigue changes your risk profile. An exhausted commuter standing in the rain for 45 minutes is at real risk of getting sick or having an accident. Someone energized can walk an extra 15 minutes to bypass a traffic jam without consequence. The app treats exhaustion as a risk multiplier — it makes every other bad condition worse.</p>
+        </div>
+        <div class="about-detail-card">
+          <div class="adc-head">
+            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">🌦</span>
+            <span>Live Weather</span>
+          </div>
+          <p>Fetched in real time from <strong>OpenWeatherMap</strong> using your origin city. The system classifies the sky as <strong>Clear</strong> or <strong>Rainy</strong> — where Rainy covers rain, drizzle, and thunderstorms. Rain matters because it does three things at once: it makes walking miserable and dangerous, it causes traffic to slow significantly on Philippine roads due to flooding and poor visibility, and it drives ride-hailing surge prices up sharply.</p>
+        </div>
+        <div class="about-detail-card">
+          <div class="adc-head">
+            <span class="adc-num" style="background:#E6F7F0;color:#1E7A55;">🚦</span>
+            <span>Traffic Congestion</span>
+          </div>
+          <p>Fetched from <strong>TomTom Traffic Flow API</strong> using the coordinates of your origin city. The system measures the ratio of current road speed to the normal free-flow speed for that area. If traffic is moving at less than 75% of the usual speed, it's classified as <strong>High Congestion</strong>. If no traffic key is configured, the app falls back to estimating congestion from weather — since rain reliably causes significant slowdowns on Philippine roads, it's treated as a congestion proxy.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision matrix -->
+    <div class="about-section">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5A75A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        How the recommendation is chosen
+      </h2>
+      <div class="about-prose">
+        <p>The four inputs are checked against a priority-ordered set of conditions. The first condition that matches wins.</p>
+      </div>
+      <div class="matrix-table">
+        <div class="matrix-row header">
+          <span>Condition</span><span>Budget</span><span>Energy</span><span>Weather</span><span>Traffic</span><span>Result</span>
+        </div>
+        <div class="matrix-row stay">
+          <span class="mc-label">🛑 Stay in Campus</span>
+          <span><strong>Low</strong></span>
+          <span>Exhausted</span>
+          <span>Rain <em>or</em></span>
+          <span>High <em>or both</em></span>
+          <span>Wait it out. Commuting now means expensive surges or getting stuck in gridlock while physically depleted.</span>
+        </div>
+        <div class="matrix-row active">
+          <span class="mc-label">🚶 Active Bypass</span>
+          <span><strong>Low</strong></span>
+          <span>Energized</span>
+          <span>Clear</span>
+          <span>High</span>
+          <span>Walk past the bottleneck. Traffic is jammed but you have the energy and conditions to bypass it on foot.</span>
+        </div>
+        <div class="matrix-row welfare">
+          <span class="mc-label">🛵 Priority Transit</span>
+          <span>Normal / High</span>
+          <span>Exhausted</span>
+          <span>Rainy</span>
+          <span>Any</span>
+          <span>Spend a bit more. You have the budget buffer — fatigue plus rain is a real safety risk, not worth saving ₱50.</span>
+        </div>
+        <div class="matrix-row optimal">
+          <span class="mc-label">🚌 Green Light</span>
+          <span>Any</span>
+          <span>Normal / Energized</span>
+          <span>Clear</span>
+          <span>Low</span>
+          <span>Take your standard route now. All conditions are stable — this is the ideal window to commute.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- APIs -->
+    <div class="about-section">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#90DFC6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        External services used
+      </h2>
+      <div class="api-badge-row">
+        <a class="api-pill" href="https://openweathermap.org/api/one-call-3" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 117-7h3.5"/></svg>
+          OpenWeatherMap — Current Weather v2.5
+        </a>
+        <a class="api-pill" href="https://developer.tomtom.com/traffic-api/documentation/tomtom-maps/v1/traffic-flow/flow-segment-data" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#90DFC6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>
+          TomTom Traffic Flow Segment API v4
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /about -->
+
+<!-- ══════════════ TOASTS ══════════════ -->
+<div id="toasts" aria-live="polite"></div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="site-footer">
+  Biyahe News ✦ Smart Commuter Assistant &nbsp;·&nbsp; <span id="footer-time"></span>
+</footer>
+
+<script>
+  /* ── CONFIG ────────────────────────────────────── */
+  const CFG = {
+    weatherKey: '',
+    trafficKey: '',
+    defaultCity: 'Biñan',
+    defaultCoords: { lat: 14.3122, lon: 121.0914 }
+  };
+
+  /* ── STATE ─────────────────────────────────────── */
+  const S = {
+    budget: 150,
+    energy: 'NORMAL',
+    location: 'Biñan',
+    from: 'Biñan',
+    to: '',
+    loading: false,
+    lastWeather: null,
+    lastTraffic: null
+  };
+
+  /* ── INIT ──────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    startClock();
+    loadKeys();
+    syncBudgetControls();
+    initNav();
+    refreshStatusDots();
+  });
+
+  /* ── NAV ───────────────────────────────────────── */
+  function initNav() {
+    document.querySelectorAll('.nav-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const page = btn.dataset.page;
+        document.querySelectorAll('.nav-tab').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + page).classList.add('active');
+      });
+    });
+  }
+
+  /* ── CLOCK ─────────────────────────────────────── */
+  function startClock() {
+    function tick() {
+      const now = new Date();
+      const t = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      document.getElementById('clock-text').textContent = t;
+      const footer = document.getElementById('footer-time');
+      if (footer) footer.textContent = now.toLocaleDateString('en-PH') + ' ' + t;
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  /* ── BUDGET SYNC ───────────────────────────────── */
+  function syncBudgetControls() {
+    const inp = document.getElementById('budgetInput');
+    const sld = document.getElementById('budgetSlider');
+    inp.addEventListener('input', () => {
+      let v = parseInt(inp.value) || 0;
+      sld.value = Math.min(v, 500);
+      S.budget = v;
+      updateBudgetTier(v);
+    });
+    sld.addEventListener('input', () => {
+      const v = parseInt(sld.value);
+      inp.value = v;
+      S.budget = v;
+      updateBudgetTier(v);
+    });
+  }
+
+  function updateBudgetTier(v) {
+    const el = document.getElementById('budgetTier');
+    if (v < 100) { el.className = 'budget-tier tier-low'; el.textContent = 'Low (<₱100)'; }
+    else if (v <= 250) { el.className = 'budget-tier tier-norm'; el.textContent = 'Normal'; }
+    else { el.className = 'budget-tier tier-high'; el.textContent = 'High (>₱250)'; }
+  }
+
+  /* ── KEY MANAGEMENT ────────────────────────────── */
+  function loadKeys() {
+    const w = localStorage.getItem('bn_wkey') || '';
+    const t = localStorage.getItem('bn_tkey') || '';
+    CFG.weatherKey = w;
+    CFG.trafficKey = t;
+    if (document.getElementById('wKeyInput')) document.getElementById('wKeyInput').value = w;
+    if (document.getElementById('tKeyInput')) document.getElementById('tKeyInput').value = t;
+    refreshStatusDots();
+  }
+
+  function saveKeys() {
+    const w = document.getElementById('wKeyInput').value.trim();
+    const t = document.getElementById('tKeyInput').value.trim();
+    localStorage.setItem('bn_wkey', w);
+    localStorage.setItem('bn_tkey', t);
+    CFG.weatherKey = w;
+    CFG.trafficKey = t;
+    refreshStatusDots();
+    toast('Keys saved!', 'ok');
+  }
+
+  function refreshStatusDots() {
+    const hasW = !!CFG.weatherKey;
+    const hasT = !!CFG.trafficKey;
+
+    const dw = document.getElementById('dotWeather');
+    const dt = document.getElementById('dotTraffic');
+    const sw = document.getElementById('statusWeatherText');
+    const st = document.getElementById('statusTrafficText');
+    const chip = document.getElementById('api-status-chip');
+    const chipTxt = document.getElementById('api-status-text');
+    const wBadge = document.getElementById('wSavedBadge');
+    const tBadge = document.getElementById('tSavedBadge');
+
+    if (dw) { dw.className = 'status-dot' + (hasW ? ' ok' : ''); }
+    if (dt) { dt.className = 'status-dot' + (hasT ? ' ok' : ''); }
+    if (sw) sw.textContent = hasW ? 'Key saved ✓' : 'Not configured';
+    if (st) st.textContent = hasT ? 'Key saved ✓' : 'Not configured — using weather fallback';
+    if (wBadge) wBadge.style.display = hasW ? 'inline-flex' : 'none';
+    if (tBadge) tBadge.style.display = hasT ? 'inline-flex' : 'none';
+
+    if (chip) {
+      if (hasW && hasT) {
+        chip.className = 'chip live';
+        chipTxt.textContent = 'Live APIs';
+      } else if (hasW && !hasT) {
+        chip.className = 'chip live';
+        chipTxt.textContent = 'Weather live · Traffic estimated';
+      } else {
+        chip.className = 'chip error';
+        chipTxt.textContent = 'No Weather key';
+      }
+    }
+  }
+
+  /* ── SHOW / HIDE KEY ───────────────────────────── */
+  function toggleKeyVis(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    const showing = inp.type === 'text';
+    inp.type = showing ? 'password' : 'text';
+    // swap eye icon
+    btn.innerHTML = showing
+      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  }
+</script>
+
+<script>
+  /* ── EVALUATION ENGINE ─────────────────────────── */
+  async function runEvaluation() {
+    if (S.loading) return;
+
+    // Collect inputs
+    S.budget   = parseInt(document.getElementById('budgetInput').value) || 0;
+    S.from     = document.getElementById('fromInput').value.trim() || CFG.defaultCity;
+    S.to       = document.getElementById('toInput').value.trim() || '';
+    S.location = S.from; // weather is fetched from origin
+    const energyEl = document.querySelector('input[name="energy"]:checked');
+    S.energy = energyEl ? energyEl.value : 'NORMAL';
+
+    const wKey = CFG.weatherKey;
+    const tKey = CFG.trafficKey;
+
+    if (!wKey) {
+      toast('No Weather API key. Go to API Keys tab to set one.', 'err');
+      // Navigate to settings
+      document.querySelector('[data-page="settings"]').click();
+      return;
+    }
+
+    setLoading(true);
+
+    let weatherState = null;
+    let trafficState = null;
+    let weatherMeta  = null;
+    let trafficMeta  = null;
+    let coords       = CFG.defaultCoords;
+
+    /* ── Step A: Weather ─────────────────────────── */
+    try {
+      const wUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.location)}&appid=${wKey}`;
+      const wRes = await fetch(wUrl);
+      if (!wRes.ok) {
+        if (wRes.status === 401) {
+          throw new Error('WEATHER_401');
+        }
+        if (wRes.status === 404) {
+          throw new Error('WEATHER_404');
+        }
+        throw new Error(`Weather API: ${wRes.status} ${wRes.statusText}`);
+      }
+      const wd = await wRes.json();
+
+      const raw = wd.weather[0].main;
+      const isRainy = /rain|thunderstorm|drizzle/i.test(raw);
+      weatherState = isRainy ? 'RAINY' : 'CLEAR';
+      weatherMeta  = {
+        desc:  wd.weather[0].description,
+        temp:  (wd.main.temp - 273.15).toFixed(1),
+        city:  wd.name
+      };
+      coords = { lat: wd.coord.lat, lon: wd.coord.lon };
+      S.lastWeather = { state: weatherState, meta: weatherMeta };
+    } catch (e) {
+      setLoading(false);
+      if (e.message === 'WEATHER_401') {
+        showWeatherKeyError();
+        return;
+      }
+      if (e.message === 'WEATHER_404') {
+        toast(`City "${S.location}" not found — try a nearby city name.`, 'err');
+        return;
+      }
+      toast(`Weather fetch failed: ${e.message}`, 'err');
+      return;
+    }
+
+    /* ── Step B: Traffic (TomTom Flow → weather fallback) ── */
+    if (tKey) {
+      try {
+        // TomTom Flow Segment Data v4 — free, no credit card, 2500 req/day
+        // style=absolute, zoom=10, format=json
+        const tUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=${tKey}&point=${coords.lat},${coords.lon}`;
+        const tRes = await fetch(tUrl);
+        if (!tRes.ok) {
+          const errBody = await tRes.json().catch(() => ({}));
+          const msg = errBody?.detailedError?.message || errBody?.error || tRes.statusText;
+          throw new Error(`TomTom ${tRes.status}: ${msg}`);
+        }
+        const td = await tRes.json();
+        const flow = td.flowSegmentData;
+        if (!flow) throw new Error('No flow data in response');
+
+        const currentSpeed = flow.currentSpeed;
+        const freeFlowSpeed = flow.freeFlowSpeed;
+        const ratio = freeFlowSpeed > 0 ? currentSpeed / freeFlowSpeed : 1;
+        trafficState = ratio < 0.75 ? 'TRAFFIC_HIGH' : 'TRAFFIC_LOW';
+        trafficMeta = {
+          current:  currentSpeed,
+          freeFlow: freeFlowSpeed,
+          ratio:    ratio,
+          source:   'TomTom'
+        };
+        S.lastTraffic = { state: trafficState, meta: trafficMeta };
+      } catch (e) {
+        // TomTom failed — fall back to weather-based heuristic
+        trafficState = inferTrafficFromWeather(weatherMeta);
+        trafficMeta  = { source: 'weather-inferred', inferred: true };
+        toast(`Traffic: ${e.message} — estimating from weather instead.`, 'err');
+      }
+    } else {
+      // No key — infer from weather silently
+      trafficState = inferTrafficFromWeather(weatherMeta);
+      trafficMeta  = { source: 'weather-inferred', inferred: true };
+    }
+
+    setLoading(false);
+    renderResult(weatherState, trafficState, weatherMeta, trafficMeta);
+  }
+
+  /* ── TRAFFIC INFERENCE FROM WEATHER ────────────── */
+  // When no traffic API is available, we estimate congestion using
+  // weather context: rain/storms historically correlate with 30-60%
+  // speed drops on Philippine roads due to flooding and poor visibility.
+  function inferTrafficFromWeather(wMeta) {
+    if (!wMeta) return 'TRAFFIC_LOW';
+    const desc = (wMeta.desc || '').toLowerCase();
+    const isStorm = /thunder|storm|heavy rain|squall/i.test(desc);
+    const isRain  = /rain|drizzle/i.test(desc);
+    if (isStorm) return 'TRAFFIC_HIGH';
+    if (isRain)  return 'TRAFFIC_HIGH'; // rain reliably causes congestion in PH
+    return 'TRAFFIC_LOW';
+  }
+
+  /* ── RECOMMENDATION MATRIX ─────────────────────── */
+  function decideCondition(budget, energy, weather, traffic) {
+    const bLow  = budget < 100;
+    const bHigh = budget > 250;
+
+    // Cond 1: High financial + physical risk
+    if (bLow && energy === 'EXHAUSTED' && (weather === 'RAINY' || traffic === 'TRAFFIC_HIGH')) {
+      return 'stay';
+    }
+    // Cond 2: High energy bypass
+    if (bLow && energy === 'ENERGIZED' && weather === 'CLEAR' && traffic === 'TRAFFIC_HIGH') {
+      return 'active';
+    }
+    // Cond 3: Budget priority comfort (welfare)
+    if (!bLow && energy === 'EXHAUSTED' && weather === 'RAINY') {
+      return 'welfare';
+    }
+    // Cond 4: Optimal baseline
+    return 'optimal';
+  }
+
+  const CONTENT = {
+    stay: {
+      icon: '🛑',
+      badge: 'High Risk · Stay',
+      action: '🛑 Do Not Commute Yet — Wait in Campus',
+      justify: 'Commuting right now will force you into expensive ride-hailing surges or trap you in rain-induced gridlock while physically depleted.',
+      tip: 'Head to the university library or student lounge for 1–1.5 hours. Charge your device, download course materials for offline viewing, and let fares settle before leaving.'
+    },
+    active: {
+      icon: '🚶',
+      badge: 'Active Bypass',
+      action: '🚶‍♂️ Bypass Bottlenecks via Active Transit',
+      justify: 'Traffic is locked on the main road, but the weather is fine and you have the stamina to bypass the gridlock on foot.',
+      tip: 'Walk to an alternative transit terminal 10–15 minutes away past the main bottleneck. You\'ll skip the high-fare tricycle traps, skip terminal queues, and secure a cheaper jeepney or bus slot ahead of the crowd.'
+    },
+    welfare: {
+      icon: '🛵',
+      badge: 'Priority Welfare',
+      action: '🛵 Prioritize Welfare — Use High-Efficiency Transit',
+      justify: 'You have enough financial buffer, but extreme fatigue plus rain significantly increases accident and illness risk.',
+      tip: 'Allocate an extra ₱50–₱100 for a direct motorcycle taxi or carpool booking. Prioritize getting home quickly and dry over cutting transit costs today.'
+    },
+    optimal: {
+      icon: '🚌',
+      badge: 'Green Light',
+      action: '🚌 Green Light for Mass Transit',
+      justify: 'External conditions are completely stable. Travel times and fare structures are at baseline — ideal window to commute normally.',
+      tip: 'Proceed via your standard jeepney, train, or bus route. Use the smooth travel window to catch up on a podcast or review your flashcards.'
+    }
+  };
+
+  function renderResult(weatherState, trafficState, weatherMeta, trafficMeta) {
+    const b   = parseInt(document.getElementById('budgetInput').value) || 0;
+    const e   = (document.querySelector('input[name="energy"]:checked') || {}).value || 'NORMAL';
+    const cond = decideCondition(b, e, weatherState, trafficState);
+    const c    = CONTENT[cond];
+
+    // Update card
+    const card = document.getElementById('resultCard');
+    card.className = `result-card visible slide-in ${cond}`;
+
+    document.getElementById('rcIcon').textContent    = c.icon;
+    document.getElementById('rcTitle').textContent   = c.badge;
+    document.getElementById('rcTime').textContent    = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    document.getElementById('rcAction').textContent  = c.action;
+    document.getElementById('rcJustify').textContent = c.justify;
+    document.getElementById('rcTip').textContent     = c.tip;
+
+    // Route strip
+    const from = S.from || '';
+    const to   = S.to   || '';
+    const routeEl = document.getElementById('rcRoute');
+    if (from || to) {
+      document.getElementById('rcFrom').textContent = from || '—';
+      document.getElementById('rcTo').textContent   = to   || '—';
+      routeEl.style.display = 'flex';
+    } else {
+      routeEl.style.display = 'none';
+    }
+
+    // Weather dash
+    const wIcon = weatherState === 'RAINY' ? '🌧' : '☀️';
+    document.getElementById('dashWeather').innerHTML = `${wIcon} ${weatherState === 'RAINY' ? 'Rainy' : 'Clear'}`;
+    document.getElementById('dashWeatherSub').textContent = weatherMeta
+      ? `${weatherMeta.desc} · ${weatherMeta.temp}°C · ${weatherMeta.city}`
+      : 'Live data';
+
+    // Traffic dash
+    const tIcon = trafficState === 'TRAFFIC_HIGH' ? '🔴' : '🟢';
+    document.getElementById('dashTraffic').innerHTML = `${tIcon} ${trafficState === 'TRAFFIC_HIGH' ? 'High' : 'Low'} Congestion`;
+
+    const speedBar = document.getElementById('speedBar');
+    const speedFill = document.getElementById('speedFill');
+
+    if (trafficMeta && !trafficMeta.inferred) {
+      document.getElementById('dashTrafficSub').textContent = `${trafficMeta.current} km/h of ${trafficMeta.freeFlow} km/h free-flow`;
+      speedBar.style.display = 'block';
+      const pct = Math.round(trafficMeta.ratio * 100);
+      speedFill.style.width = pct + '%';
+      speedFill.style.background = trafficState === 'TRAFFIC_HIGH' ? '#F5B8C4' : '#90DFC6';
+    } else if (trafficMeta && trafficMeta.inferred) {
+      document.getElementById('dashTrafficSub').textContent = 'Estimated from weather conditions';
+      speedBar.style.display = 'none';
+    } else {
+      document.getElementById('dashTrafficSub').textContent = 'No traffic data';
+      speedBar.style.display = 'none';
+    }
+
+    // Hide waiting card
+    document.getElementById('waitingCard').style.display = 'none';
+
+    // Trigger re-animation
+    card.classList.remove('slide-in');
+    void card.offsetWidth;
+    card.classList.add('slide-in');
+  }
+
+  /* ── LOADING STATE ─────────────────────────────── */
+  function setLoading(on) {
+    S.loading = on;
+    const btn = document.getElementById('evalBtn');
+    const txt = document.getElementById('evalBtnText');
+    btn.disabled = on;
+    if (on) {
+      btn.innerHTML = '<div class="spinner"></div><span>Fetching live data…</span>';
+    } else {
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.13 1.17 2 2 0 012.11 1H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.9a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15z"/></svg>
+        <span id="evalBtnText">Get My Commute Plan</span>`;
+    }
+  }
+
+  /* ── WEATHER KEY ERROR HELPER ──────────────────── */
+  function showWeatherKeyError() {
+    // Show the inline banner in settings
+    const banner = document.getElementById('wKeyBanner');
+    if (banner) banner.style.display = 'flex';
+    // Navigate to settings tab
+    document.querySelector('[data-page="settings"]').click();
+    toast('Weather key not active yet — see the notice on this page.', 'err');
+  }
+
+  /* ── TOAST ─────────────────────────────────────── */
+  function toast(msg, type = '') {
+    const c = document.getElementById('toasts');
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    const icons = { ok: '✅', err: '⚠️', '': '🔔' };
+    el.innerHTML = `<span>${icons[type] || '🔔'}</span><span>${msg}</span>`;
+    c.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('out');
+      el.addEventListener('animationend', () => el.remove());
+    }, 3400);
+  }
+</script>
+</body>
+</html>
