@@ -8,6 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- TomTom Maps SDK -->
+  <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"/>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/services/services-web.min.js"></script>
   <style>
     /* ── DESIGN TOKENS ─────────────────────────────────── */
     :root {
@@ -622,6 +626,191 @@
       margin-top:auto;
     }
 
+    /* ── MAP MODAL OVERLAY ───────────────────────────── */
+    .map-modal-overlay{
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(30,40,60,.45);
+      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+      display:flex;flex-direction:column;justify-content:flex-end;
+      opacity:0;pointer-events:none;
+      transition:opacity .28s var(--ease);
+    }
+    .map-modal-overlay.open{opacity:1;pointer-events:all;}
+    .map-modal{
+      width:100%;height:92dvh;max-height:96vh;
+      background:var(--surface);
+      border-radius:28px 28px 0 0;
+      display:flex;flex-direction:column;overflow:hidden;
+      transform:translateY(100%);
+      transition:transform .32s cubic-bezier(.16,1,.3,1);
+      box-shadow:0 -8px 40px rgba(30,40,60,.18);
+    }
+    .map-modal-overlay.open .map-modal{transform:translateY(0);}
+
+    /* drag handle */
+    .modal-handle{
+      width:44px;height:5px;border-radius:3px;
+      background:var(--border);margin:.7rem auto .2rem;flex-shrink:0;
+    }
+    /* modal top bar */
+    .modal-topbar{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.6rem 1rem .75rem;flex-shrink:0;
+    }
+    .modal-back{
+      width:36px;height:36px;border-radius:50%;
+      border:1.5px solid var(--border);background:var(--surface-2);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text-2);flex-shrink:0;
+      transition:all .15s;
+    }
+    .modal-back:hover{background:var(--border);color:var(--text);}
+    .modal-title{font-size:1rem;font-weight:800;color:var(--text);}
+
+    /* search bar inside modal */
+    .modal-search-wrap{
+      padding:0 1rem .75rem;flex-shrink:0;position:relative;
+    }
+    .modal-search-input{
+      width:100%;padding:.82rem 1rem .82rem 2.6rem;
+      border-radius:var(--r-md);
+      border:2px solid var(--border);
+      background:var(--surface-2);
+      font-family:inherit;font-size:.97rem;font-weight:600;
+      color:var(--text);transition:all .18s var(--ease);
+    }
+    .modal-search-input:focus{
+      outline:none;border-color:var(--primary);background:var(--surface);
+      box-shadow:0 0 0 4px rgba(123,179,240,.15);
+    }
+    .modal-search-input::placeholder{color:var(--text-3);font-weight:500;}
+    .modal-search-icon{
+      position:absolute;left:1.9rem;top:50%;transform:translateY(-50%);
+      color:var(--text-3);pointer-events:none;
+    }
+
+    /* suggestions dropdown */
+    .modal-suggestions{
+      position:absolute;left:1rem;right:1rem;top:calc(100% - .75rem);
+      background:var(--surface);border:1.5px solid var(--border);
+      border-radius:var(--r-md);box-shadow:var(--shadow-lg);
+      z-index:10002;overflow:hidden;max-height:260px;overflow-y:auto;
+      display:none;
+    }
+    .modal-suggestions.open{display:block;}
+    .sugg-item{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.75rem 1rem;cursor:pointer;
+      font-size:.9rem;font-weight:600;color:var(--text);
+      border-bottom:1px solid var(--border);
+      transition:background .12s;
+    }
+    .sugg-item:last-child{border-bottom:none;}
+    .sugg-item:hover,.sugg-item.focused{background:var(--surface-2);}
+    .sugg-icon{
+      width:32px;height:32px;border-radius:10px;
+      background:#EEF4FF;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .sugg-main{display:flex;flex-direction:column;gap:.1rem;min-width:0;}
+    .sugg-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sugg-detail{font-size:.75rem;color:var(--text-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sugg-loading{
+      padding:.9rem 1rem;font-size:.85rem;color:var(--text-2);
+      font-weight:600;display:flex;align-items:center;gap:.55rem;
+    }
+    .sugg-spinner{
+      width:.9rem;height:.9rem;border-radius:50%;
+      border:2px solid var(--border);border-top-color:var(--primary);
+      animation:spin .6s linear infinite;flex-shrink:0;
+    }
+
+    /* map viewport */
+    .modal-map-area{
+      flex:1;position:relative;background:#E8EDF6;
+      overflow:hidden;
+    }
+    #mapFromEl,#mapToEl{
+      width:100%;height:100%;
+    }
+    /* custom marker */
+    .map-pin-marker{
+      width:36px;height:36px;
+      background:var(--primary);border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg);border:3px solid #fff;
+      box-shadow:0 3px 12px rgba(91,150,220,.45);
+      position:relative;
+    }
+    .map-pin-marker::after{
+      content:'';position:absolute;
+      width:10px;height:10px;background:#fff;
+      border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);
+    }
+    /* crosshair center pin overlay for drag */
+    .map-center-pin{
+      position:absolute;left:50%;top:50%;z-index:100;
+      transform:translate(-50%,-100%);
+      pointer-events:none;
+      transition:transform .15s;
+    }
+    .map-center-pin.dragging{transform:translate(-50%,-115%) scale(1.1);}
+
+    /* demo fallback list */
+    .demo-list-wrap{
+      flex:1;overflow-y:auto;padding:.5rem .75rem 1rem;
+    }
+    .demo-notice{
+      display:flex;align-items:center;gap:.5rem;
+      background:#FFF8EC;border:1.5px solid #F5DFA0;
+      border-radius:var(--r-md);padding:.75rem 1rem;
+      font-size:.82rem;font-weight:700;color:#7A5800;
+      margin-bottom:1rem;
+    }
+    .demo-option{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.85rem 1rem;border-radius:var(--r-md);
+      cursor:pointer;background:var(--surface-2);
+      border:1.5px solid var(--border);margin-bottom:.55rem;
+      transition:all .15s var(--ease);
+      font-weight:700;font-size:.92rem;
+    }
+    .demo-option:hover{border-color:var(--primary);background:#EEF4FF;color:var(--primary-dk);}
+    .demo-option-icon{
+      width:34px;height:34px;border-radius:10px;
+      background:#EEF4FF;display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+    .demo-option-sub{font-size:.72rem;font-weight:600;color:var(--text-2);}
+
+    /* confirm button */
+    .modal-confirm-bar{
+      padding:.85rem 1rem;padding-bottom:calc(.85rem + env(safe-area-inset-bottom));
+      background:var(--surface);border-top:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .btn-confirm-loc{
+      width:100%;padding:.95rem 1.5rem;
+      border:none;border-radius:var(--r-md);
+      background:linear-gradient(135deg,var(--primary),var(--primary-dk));
+      color:#fff;font-family:inherit;font-size:1rem;font-weight:800;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;
+      box-shadow:0 5px 18px rgba(91,150,220,.28);
+      transition:all .2s var(--ease);
+    }
+    .btn-confirm-loc:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,150,220,.38);}
+    .btn-confirm-loc:active{transform:translateY(1px);}
+    .btn-confirm-loc:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+
+    /* make route fields look tappable / read-only */
+    .route-input.modal-trigger{
+      cursor:pointer;user-select:none;caret-color:transparent;
+    }
+    .route-input.modal-trigger:focus{
+      background:rgba(123,179,240,.06);
+      box-shadow:none;border:none;outline:none;
+    }
+    .route-field:has(.route-input.modal-trigger):hover{background:rgba(123,179,240,.04);}
+
     /* ── LOCATION AUTOCOMPLETE ───────────────────────── */
     .route-field-wrap{position:relative;}
     .ac-dropdown{
@@ -858,8 +1047,9 @@
               <div class="route-field-inner">
                 <span class="route-field-lbl">From</span>
                 <div class="route-field-wrap">
-                  <input class="route-input" type="text" id="fromInput"
-                    value="Biñan" placeholder="Starting point" autocomplete="off" required>
+                  <input class="route-input modal-trigger" type="text" id="fromInput"
+                    value="" placeholder="Starting point" autocomplete="off" readonly
+                    onclick="openMapModal('from')" aria-label="Select starting point — opens map">
                   <div class="ac-dropdown" id="acFrom"></div>
                 </div>
               </div>
@@ -873,8 +1063,9 @@
               <div class="route-field-inner">
                 <span class="route-field-lbl">To</span>
                 <div class="route-field-wrap">
-                  <input class="route-input" type="text" id="toInput"
-                    value="" placeholder="Where are you going?" autocomplete="off">
+                  <input class="route-input modal-trigger" type="text" id="toInput"
+                    value="" placeholder="Where are you going?" autocomplete="off" readonly
+                    onclick="openMapModal('to')" aria-label="Select destination — opens map">
                   <div class="ac-dropdown" id="acTo"></div>
                 </div>
               </div>
@@ -1288,6 +1479,68 @@
   </div>
 </div><!-- /about -->
 
+<!-- ══════════════ MAP MODAL OVERLAY ══════════════ -->
+<div class="map-modal-overlay" id="mapModalOverlay" aria-modal="true" role="dialog" aria-label="Select location on map">
+  <div class="map-modal" id="mapModalBox">
+    <div class="modal-handle" aria-hidden="true"></div>
+
+    <!-- Top bar -->
+    <div class="modal-topbar">
+      <button class="modal-back" type="button" onclick="closeMapModal()" aria-label="Close map">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="modal-title" id="mapModalTitle">Pick a location</span>
+    </div>
+
+    <!-- Search bar -->
+    <div class="modal-search-wrap">
+      <span class="modal-search-icon" aria-hidden="true">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input class="modal-search-input" type="text" id="mapSearchInput"
+        placeholder="Search for a place…" autocomplete="off"
+        aria-label="Search location" aria-autocomplete="list"
+        aria-controls="mapSuggestions">
+      <div class="modal-suggestions" id="mapSuggestions" role="listbox"></div>
+    </div>
+
+    <!-- Live TomTom map -->
+    <div class="modal-map-area" id="mapLiveArea">
+      <div id="mapFromEl" style="display:none;width:100%;height:100%;"></div>
+      <div id="mapToEl"   style="display:none;width:100%;height:100%;"></div>
+      <!-- Center crosshair pin for drag-to-refine -->
+      <div class="map-center-pin" id="mapCenterPin" aria-hidden="true">
+        <svg width="40" height="48" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="pinShadow" x="-40%" y="-20%" width="180%" height="160%">
+              <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(91,150,220,0.4)"/>
+            </filter>
+          </defs>
+          <path d="M20 2C11.16 2 4 9.16 4 18C4 29.5 20 46 20 46C20 46 36 29.5 36 18C36 9.16 28.84 2 20 2Z" fill="#7BB3F0" filter="url(#pinShadow)"/>
+          <circle cx="20" cy="18" r="6" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Demo fallback list (shown when map fails) -->
+    <div class="demo-list-wrap" id="demoListArea" style="display:none;">
+      <div class="demo-notice">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        ✨ Demo Preview Active — map unavailable
+      </div>
+      <div id="demoOptionsList"></div>
+    </div>
+
+    <!-- Confirm button -->
+    <div class="modal-confirm-bar">
+      <button class="btn-confirm-loc" type="button" id="confirmLocBtn" onclick="confirmLocation()" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Confirm Location ✨
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════ TOASTS ══════════════ -->
 <div id="toasts" aria-live="polite"></div>
 
@@ -1310,8 +1563,8 @@
   const S = {
     budget: 150,
     energy: 'NORMAL',
-    location: 'Biñan',
-    from: 'Biñan',
+    location: '',
+    from: '',
     to: '',
     loading: false,
     lastWeather: null,
@@ -1597,6 +1850,15 @@
     S.location = S.from; // weather is fetched from origin
     const energyEl = document.querySelector('input[name="energy"]:checked');
     S.energy = energyEl ? energyEl.value : 'NORMAL';
+
+    // Require a starting point
+    if (!S.from) {
+      toast('Please set a starting point first — tap the FROM field.', 'err');
+      document.getElementById('fromInput').parentElement.parentElement.parentElement.style.border = '2px solid var(--accent-rose)';
+      setTimeout(() => { document.getElementById('fromInput').parentElement.parentElement.parentElement.style.border = ''; }, 1800);
+      openMapModal('from');
+      return;
+    }
 
     const wKey = CFG.weatherKey;
     const tKey = CFG.trafficKey;
@@ -1975,6 +2237,432 @@
       el.addEventListener('animationend', () => el.remove());
     }, 3400);
   }
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   MAP MODAL — TomTom-powered location picker
+   Angkas-style slide-up overlay with search + map + confirm
+══════════════════════════════════════════════════════ */
+
+const MAP_MODAL = {
+  activeField: null,   // 'from' | 'to'
+  mapInstances: {},    // { from: TomTomMap, to: TomTomMap }
+  pendingCoords: null, // { lat, lon, name } — staged selection
+  searchTimer: null,
+  suggIdx: -1,
+  mapReady: false,
+  isDemoMode: false,
+};
+
+/* ── Demo fallback locations (Biñan / DLSB area) ── */
+const DEMO_LOCATIONS = [
+  { name: 'DLSB Main Gate',         detail: 'De La Salle Lipa, Biñan', lat: 14.3320, lon: 121.0812 },
+  { name: 'Biñan Central Terminal', detail: 'Biñan City, Laguna',       lat: 14.3344, lon: 121.0800 },
+  { name: 'SM City BF Parañaque',   detail: 'BF Homes, Parañaque',      lat: 14.4642, lon: 121.0010 },
+  { name: 'CALAX Biñan Exit',       detail: 'CALAX, Biñan, Laguna',     lat: 14.3279, lon: 121.0736 },
+  { name: 'NUVALI Town Center',     detail: 'Sta. Rosa, Laguna',         lat: 14.2854, lon: 121.0580 },
+  { name: 'Alabang Town Center',    detail: 'Muntinlupa City, Metro Manila', lat: 14.4200, lon: 121.0455 },
+  { name: 'LRT-1 Baclaran Station', detail: 'Parañaque, Metro Manila',   lat: 14.5319, lon: 120.9980 },
+  { name: 'Mall of Asia',           detail: 'Pasay City, Metro Manila',  lat: 14.5356, lon: 120.9826 },
+];
+
+/* ── Open the modal ─────────────────────────────── */
+function openMapModal(field) {
+  MAP_MODAL.activeField = field;
+  MAP_MODAL.pendingCoords = null;
+
+  const title = field === 'from' ? '📍 Set Starting Point' : '🏁 Set Destination';
+  document.getElementById('mapModalTitle').textContent = title;
+
+  // Pre-fill search with existing value
+  const existingVal = document.getElementById(field === 'from' ? 'fromInput' : 'toInput').value;
+  const searchInp = document.getElementById('mapSearchInput');
+  searchInp.value = existingVal || '';
+
+  // Lock body scroll
+  document.body.style.overflow = 'hidden';
+
+  // Show overlay
+  const overlay = document.getElementById('mapModalOverlay');
+  overlay.classList.add('open');
+
+  // Reset confirm button
+  const confirmBtn = document.getElementById('confirmLocBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.querySelector('svg + *') || (confirmBtn.lastChild.textContent = 'Confirm Location ✨');
+
+  // Focus search after animation
+  setTimeout(() => searchInp.focus(), 340);
+
+  // Init map for this field if not done yet
+  _initMapForField(field);
+
+  // Close suggestions dropdown
+  _closeSuggestions();
+}
+
+/* ── Close the modal ────────────────────────────── */
+function closeMapModal() {
+  const overlay = document.getElementById('mapModalOverlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  _closeSuggestions();
+  MAP_MODAL.activeField = null;
+  MAP_MODAL.pendingCoords = null;
+}
+
+/* ── Confirm & populate back to dashboard ──────── */
+function confirmLocation() {
+  const p = MAP_MODAL.pendingCoords;
+  if (!p) return;
+
+  const field = MAP_MODAL.activeField;
+  const inputId = field === 'from' ? 'fromInput' : 'toInput';
+  const inp = document.getElementById(inputId);
+  inp.value = p.name;
+
+  // Update app state coords
+  if (field === 'from') {
+    S.from = p.name;
+    S.location = p.name;
+    CFG.defaultCoords = { lat: p.lat, lon: p.lon };
+  } else {
+    S.to = p.name;
+  }
+
+  // Visual pulse on the field
+  inp.style.transition = 'background .3s';
+  inp.style.background = 'rgba(123,179,240,.18)';
+  setTimeout(() => { inp.style.background = ''; }, 600);
+
+  toast(`${field === 'from' ? 'Start' : 'Destination'} set to ${p.name} ✨`, 'ok');
+  closeMapModal();
+}
+
+/* ── Init TomTom map for a field ────────────────── */
+function _initMapForField(field) {
+  const tKey = CFG.trafficKey;
+  const mapElId = field === 'from' ? 'mapFromEl' : 'mapToEl';
+
+  // Show the right map container, hide the other
+  document.getElementById('mapFromEl').style.display = field === 'from' ? 'block' : 'none';
+  document.getElementById('mapToEl').style.display   = field === 'to'   ? 'block' : 'none';
+  document.getElementById('mapLiveArea').style.display = 'flex';
+  document.getElementById('demoListArea').style.display = 'none';
+
+  // Already initialized for this field
+  if (MAP_MODAL.mapInstances[field]) {
+    MAP_MODAL.mapReady = true;
+    MAP_MODAL.isDemoMode = false;
+    _updateCenterPinCoords();
+    return;
+  }
+
+  // No TomTom key → go demo immediately
+  if (!tKey) {
+    _activateDemoMode();
+    return;
+  }
+
+  // Try to load TomTom map
+  try {
+    if (typeof tt === 'undefined' || !tt.map) throw new Error('TomTom SDK not loaded');
+
+    const center = CFG.defaultCoords;
+    const mapInst = tt.map({
+      key: tKey,
+      container: mapElId,
+      center: [center.lon, center.lat],
+      zoom: 14,
+      language: 'en-GB',
+    });
+
+    // Custom marker element
+    const markerEl = document.createElement('div');
+    markerEl.innerHTML = `<div class="map-pin-marker"></div>`;
+    markerEl.style.cssText = 'width:36px;height:36px;cursor:pointer;';
+
+    const marker = new tt.Marker({ element: markerEl, anchor: 'bottom' })
+      .setLngLat([center.lon, center.lat])
+      .addTo(mapInst);
+
+    MAP_MODAL.mapInstances[field] = { map: mapInst, marker };
+
+    mapInst.on('load', () => {
+      MAP_MODAL.mapReady = true;
+      MAP_MODAL.isDemoMode = false;
+      document.getElementById('mapCenterPin').style.display = 'block';
+    });
+
+    mapInst.on('error', () => _activateDemoMode());
+
+    // Update pending coords as the user drags the map
+    mapInst.on('movestart', () => {
+      document.getElementById('mapCenterPin').classList.add('dragging');
+    });
+    mapInst.on('moveend', () => {
+      document.getElementById('mapCenterPin').classList.remove('dragging');
+      const c = mapInst.getCenter();
+      _reverseGeocode(c.lat, c.lng, field);
+    });
+
+    // Resize after modal animation
+    setTimeout(() => mapInst.resize(), 380);
+
+  } catch (err) {
+    console.warn('Map init failed:', err);
+    _activateDemoMode();
+  }
+}
+
+/* ── Switch to demo mode ──────────────────────── */
+function _activateDemoMode() {
+  MAP_MODAL.isDemoMode = true;
+  MAP_MODAL.mapReady = false;
+
+  document.getElementById('mapLiveArea').style.display = 'none';
+  document.getElementById('demoListArea').style.display = 'block';
+  document.getElementById('mapCenterPin').style.display = 'none';
+
+  const list = document.getElementById('demoOptionsList');
+  list.innerHTML = DEMO_LOCATIONS.map((loc, i) =>
+    `<div class="demo-option" role="option" tabindex="0"
+        onclick="selectDemoLocation(${i})"
+        onkeydown="if(event.key==='Enter')selectDemoLocation(${i})">
+      <div class="demo-option-icon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div>
+        <div>${escHtml(loc.name)}</div>
+        <div class="demo-option-sub">${escHtml(loc.detail)}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+/* ── Select demo option ─────────────────────────── */
+function selectDemoLocation(idx) {
+  const loc = DEMO_LOCATIONS[idx];
+  MAP_MODAL.pendingCoords = { lat: loc.lat, lon: loc.lon, name: loc.name };
+
+  // Highlight selection
+  document.querySelectorAll('.demo-option').forEach((el, i) => {
+    el.style.borderColor = i === idx ? 'var(--primary)' : '';
+    el.style.background  = i === idx ? '#EEF4FF' : '';
+  });
+
+  document.getElementById('mapSearchInput').value = loc.name;
+  document.getElementById('confirmLocBtn').disabled = false;
+}
+
+/* ── TomTom Fuzzy Search (autocomplete) ─────────── */
+function _runModalSearch(query) {
+  const tKey = CFG.trafficKey;
+  const suggBox = document.getElementById('mapSuggestions');
+
+  if (query.length < 2) { _closeSuggestions(); return; }
+
+  // Loading state
+  suggBox.innerHTML = `<div class="sugg-loading"><div class="sugg-spinner"></div>Searching…</div>`;
+  suggBox.classList.add('open');
+
+  clearTimeout(MAP_MODAL.searchTimer);
+  MAP_MODAL.searchTimer = setTimeout(async () => {
+    // No key? Use OWM geocoding as fallback, or demo
+    if (!tKey) {
+      _runOWMSearch(query);
+      return;
+    }
+    try {
+      if (typeof tt === 'undefined' || !tt.services) throw new Error('SDK not loaded');
+
+      const results = await tt.services.fuzzySearch({
+        key: tKey,
+        query: query,
+        limit: 6,
+        countrySet: 'PH',
+        language: 'en-GB',
+      }).go();
+
+      _renderModalSuggestions(results.results || []);
+    } catch (e) {
+      // Fallback to OWM or demo list
+      _runOWMSearch(query);
+    }
+  }, 320);
+}
+
+/* ── OWM geocode fallback for search ─────────────── */
+async function _runOWMSearch(query) {
+  const wKey = CFG.weatherKey;
+  if (!wKey) { _closeSuggestions(); return; }
+
+  try {
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${wKey}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('geo fail');
+    const data = await res.json();
+    // Normalize to TomTom-like shape
+    const normalized = (data || []).map(r => ({
+      address: {
+        freeformAddress: [r.name, r.state, r.country].filter(Boolean).join(', '),
+        municipality: r.name,
+        country: r.country,
+      },
+      position: { lat: r.lat, lon: r.lng || r.lon },
+    }));
+    _renderModalSuggestions(normalized);
+  } catch (_) {
+    _closeSuggestions();
+  }
+}
+
+/* ── Render suggestion list ──────────────────────── */
+function _renderModalSuggestions(results) {
+  MAP_MODAL.suggIdx = -1;
+  const suggBox = document.getElementById('mapSuggestions');
+
+  if (!results || results.length === 0) {
+    suggBox.innerHTML = `<div class="sugg-loading" style="opacity:.6;pointer-events:none">No results found</div>`;
+    suggBox.classList.add('open');
+    return;
+  }
+
+  suggBox.innerHTML = results.map((r, i) => {
+    const name   = r.poi?.name || r.address?.municipality || r.address?.freeformAddress?.split(',')[0] || 'Location';
+    const detail = r.address?.freeformAddress || '';
+    const lat    = r.position?.lat ?? 0;
+    const lon    = r.position?.lon ?? r.position?.lng ?? 0;
+    return `<div class="sugg-item" role="option" data-idx="${i}"
+        data-name="${escHtml(name)}" data-detail="${escHtml(detail)}"
+        data-lat="${lat}" data-lon="${lon}">
+      <div class="sugg-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div class="sugg-main">
+        <span class="sugg-name">${escHtml(name)}</span>
+        <span class="sugg-detail">${escHtml(detail)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  suggBox.querySelectorAll('.sugg-item').forEach(item => {
+    item.addEventListener('mousedown', e => {
+      e.preventDefault();
+      _selectSuggestion(item);
+    });
+  });
+
+  suggBox.classList.add('open');
+}
+
+/* ── Select a suggestion ────────────────────────── */
+function _selectSuggestion(item) {
+  const name = item.dataset.name;
+  const lat  = parseFloat(item.dataset.lat);
+  const lon  = parseFloat(item.dataset.lon);
+
+  document.getElementById('mapSearchInput').value = name;
+  MAP_MODAL.pendingCoords = { lat, lon, name };
+  document.getElementById('confirmLocBtn').disabled = false;
+
+  _closeSuggestions();
+
+  // Pan map to location
+  const field = MAP_MODAL.activeField;
+  const inst  = MAP_MODAL.mapInstances[field];
+  if (inst && inst.map) {
+    inst.map.easeTo({ center: [lon, lat], zoom: 15, duration: 500 });
+    inst.marker.setLngLat([lon, lat]);
+  }
+}
+
+/* ── Reverse geocode from map drag ──────────────── */
+async function _reverseGeocode(lat, lng, field) {
+  const tKey = CFG.trafficKey;
+  let name = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+  try {
+    if (tKey && typeof tt !== 'undefined' && tt.services) {
+      const res = await tt.services.reverseGeocode({
+        key: tKey,
+        position: { lat, lon: lng },
+        language: 'en-GB',
+      }).go();
+      const addr = res.addresses?.[0]?.address;
+      if (addr) name = addr.freeformAddress || addr.municipality || name;
+    }
+  } catch (_) { /* silent */ }
+
+  MAP_MODAL.pendingCoords = { lat, lon: lng, name };
+  document.getElementById('mapSearchInput').value = name;
+  document.getElementById('confirmLocBtn').disabled = false;
+}
+
+/* ── Update center pin coords label ─────────────── */
+function _updateCenterPinCoords() {
+  const field = MAP_MODAL.activeField;
+  const inst  = MAP_MODAL.mapInstances[field];
+  if (!inst) return;
+  const c = inst.map.getCenter();
+  MAP_MODAL.pendingCoords = { lat: c.lat, lon: c.lng, name: document.getElementById('mapSearchInput').value || 'Selected location' };
+  document.getElementById('confirmLocBtn').disabled = false;
+}
+
+/* ── Close suggestions ──────────────────────────── */
+function _closeSuggestions() {
+  const s = document.getElementById('mapSuggestions');
+  if (s) { s.classList.remove('open'); s.innerHTML = ''; }
+  MAP_MODAL.suggIdx = -1;
+}
+
+/* ── Wire up modal search input ─────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInp = document.getElementById('mapSearchInput');
+  const suggBox   = document.getElementById('mapSuggestions');
+
+  searchInp.addEventListener('input', () => {
+    _runModalSearch(searchInp.value.trim());
+  });
+
+  searchInp.addEventListener('keydown', e => {
+    const items = suggBox.querySelectorAll('.sugg-item');
+    if (!suggBox.classList.contains('open') || !items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      MAP_MODAL.suggIdx = Math.min(MAP_MODAL.suggIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('focused', i === MAP_MODAL.suggIdx));
+      items[MAP_MODAL.suggIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      MAP_MODAL.suggIdx = Math.max(MAP_MODAL.suggIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('focused', i === MAP_MODAL.suggIdx));
+      items[MAP_MODAL.suggIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const focused = suggBox.querySelector('.sugg-item.focused');
+      if (focused) _selectSuggestion(focused);
+    } else if (e.key === 'Escape') {
+      _closeSuggestions();
+    }
+  });
+
+  // Tap outside suggestions to close
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.modal-search-wrap')) _closeSuggestions();
+  });
+
+  // Close modal on overlay backdrop tap
+  document.getElementById('mapModalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('mapModalOverlay')) closeMapModal();
+  });
+
+  // Keyboard accessibility — Escape closes modal
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && MAP_MODAL.activeField) closeMapModal();
+  });
+});
 </script>
 </body>
 </html>
