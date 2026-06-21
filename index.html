@@ -637,15 +637,27 @@
     }
     .map-modal-overlay.open{opacity:1;pointer-events:all;}
     .map-modal{
-      width:100%;height:92dvh;max-height:96vh;
+      width:100%;
+      /* Use dvh so it responds to virtual keyboard on mobile */
+      height:92dvh;
+      max-height:96vh;
       background:var(--surface);
       border-radius:28px 28px 0 0;
       display:flex;flex-direction:column;overflow:hidden;
       transform:translateY(100%);
       transition:transform .32s cubic-bezier(.16,1,.3,1);
       box-shadow:0 -8px 40px rgba(30,40,60,.18);
+      /* Ensure the modal itself never overflows the viewport */
+      box-sizing:border-box;
     }
     .map-modal-overlay.open .map-modal{transform:translateY(0);}
+    /* On small phones use the full screen height */
+    @media(max-height:680px){
+      .map-modal{ height:100dvh; border-radius:0; }
+    }
+    @media(max-width:600px){
+      .map-modal{ height:100dvh; border-radius:20px 20px 0 0; }
+    }
 
     /* drag handle */
     .modal-handle{
@@ -727,7 +739,10 @@
 
     /* map viewport */
     .modal-map-area{
-      flex:1;position:relative;background:#E8EDF6;
+      /* flex:1 + min-height:0 is the correct pattern for a flex child
+         that should fill remaining vertical space without overflowing */
+      flex:1;min-height:0;
+      position:relative;background:#E8EDF6;
       overflow:hidden;
     }
     #mapFromEl,#mapToEl{
@@ -757,7 +772,9 @@
 
     /* demo fallback list */
     .demo-list-wrap{
-      flex:1;overflow-y:auto;padding:.5rem .75rem 1rem;
+      flex:1;min-height:0;
+      overflow-y:auto;padding:.5rem .75rem 1rem;
+      -webkit-overflow-scrolling:touch;
     }
     .demo-notice{
       display:flex;align-items:center;gap:.5rem;
@@ -1566,6 +1583,8 @@
     location: '',
     from: '',
     to: '',
+    fromCoords: null,  // { lat, lon } — set by map modal, used for weather + distance
+    toCoords:   null,  // { lat, lon } — set by map modal, used for distance
     loading: false,
     lastWeather: null,
     lastTraffic: null
@@ -1700,6 +1719,15 @@
     const tmp  = from.value;
     from.value = to.value;
     to.value   = tmp;
+    // Swap stored coords too
+    const tmpCoords = S.fromCoords;
+    S.fromCoords = S.toCoords;
+    S.toCoords   = tmpCoords;
+    // Swap state strings
+    const tmpFrom = S.from;
+    S.from     = S.to;
+    S.to       = tmpFrom;
+    S.location = S.from;
     // brief visual feedback on the swap button
     const btn = document.querySelector('.route-swap');
     btn.style.background = 'var(--primary)';
@@ -1876,13 +1904,17 @@
     let trafficState = null;
     let weatherMeta  = null;
     let trafficMeta  = null;
-    let coords       = CFG.defaultCoords;
+    let coords       = S.fromCoords || CFG.defaultCoords;  // prefer stored coords from map modal
     let distKm       = null;   // straight-line km between From and To
     let distClass    = 'UNKNOWN'; // SHORT / MEDIUM / LONG / UNKNOWN
 
     /* ── Step A: Weather ─────────────────────────── */
     try {
-      const wUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.location)}&appid=${wKey}`;
+      // If we have exact coords from the map modal, use lat/lon query (more reliable)
+      const wQuery = S.fromCoords
+        ? `lat=${S.fromCoords.lat}&lon=${S.fromCoords.lon}`
+        : `q=${encodeURIComponent(S.location)}`;
+      const wUrl = `https://api.openweathermap.org/data/2.5/weather?${wQuery}&appid=${wKey}`;
       const wRes = await fetch(wUrl);
       if (!wRes.ok) {
         if (wRes.status === 401) {
@@ -1903,7 +1935,9 @@
         temp:  (wd.main.temp - 273.15).toFixed(1),
         city:  wd.name
       };
-      coords = { lat: wd.coord.lat, lon: wd.coord.lon };
+      coords = S.fromCoords || { lat: wd.coord.lat, lon: wd.coord.lon };
+      // If we didn't have stored coords yet, save what OWM returned
+      if (!S.fromCoords) S.fromCoords = { lat: wd.coord.lat, lon: wd.coord.lon };
       S.lastWeather = { state: weatherState, meta: weatherMeta };
     } catch (e) {
       setLoading(false);
@@ -1922,11 +1956,18 @@
     /* ── Step B: Geocode destination → compute distance ── */
     if (S.to) {
       try {
-        const gUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.to)}&appid=${wKey}`;
-        const gRes = await fetch(gUrl);
-        if (gRes.ok) {
-          const gd = await gRes.json();
-          const destCoords = { lat: gd.coord.lat, lon: gd.coord.lon };
+        let destCoords = S.toCoords;  // use map-confirmed coords if available
+        if (!destCoords) {
+          // Fall back to OWM city-name geocoding
+          const gUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.to)}&appid=${wKey}`;
+          const gRes = await fetch(gUrl);
+          if (gRes.ok) {
+            const gd = await gRes.json();
+            destCoords = { lat: gd.coord.lat, lon: gd.coord.lon };
+            S.toCoords = destCoords;  // cache for next run
+          }
+        }
+        if (destCoords) {
           distKm = haversineKm(coords, destCoords);
           S.distKm = distKm;
           if      (distKm <  5)  distClass = 'SHORT';
@@ -2320,15 +2361,18 @@ function confirmLocation() {
   const field = MAP_MODAL.activeField;
   const inputId = field === 'from' ? 'fromInput' : 'toInput';
   const inp = document.getElementById(inputId);
+
+  // Always display the human-readable name — never raw coords
   inp.value = p.name;
 
-  // Update app state coords
+  // Update app state — name for display/OWM, coords for direct distance calc
   if (field === 'from') {
-    S.from = p.name;
-    S.location = p.name;
-    CFG.defaultCoords = { lat: p.lat, lon: p.lon };
+    S.from       = p.name;
+    S.location   = p.name;
+    S.fromCoords = { lat: p.lat, lon: p.lon };
   } else {
-    S.to = p.name;
+    S.to       = p.name;
+    S.toCoords = { lat: p.lat, lon: p.lon };
   }
 
   // Visual pulse on the field
@@ -2581,7 +2625,8 @@ function _selectSuggestion(item) {
 /* ── Reverse geocode from map drag ──────────────── */
 async function _reverseGeocode(lat, lng, field) {
   const tKey = CFG.trafficKey;
-  let name = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  // Default to a friendly generic label — never expose raw number strings to the user
+  let name = 'Selected location';
 
   try {
     if (tKey && typeof tt !== 'undefined' && tt.services) {
@@ -2591,9 +2636,14 @@ async function _reverseGeocode(lat, lng, field) {
         language: 'en-GB',
       }).go();
       const addr = res.addresses?.[0]?.address;
-      if (addr) name = addr.freeformAddress || addr.municipality || name;
+      if (addr) {
+        // Prefer the street/POI name; fall back through progressively broader fields
+        name = addr.streetName && addr.municipalitySubdivision
+          ? `${addr.streetName}, ${addr.municipalitySubdivision}`
+          : addr.freeformAddress || addr.municipality || addr.countrySubdivision || name;
+      }
     }
-  } catch (_) { /* silent */ }
+  } catch (_) { /* silent — keep generic label */ }
 
   MAP_MODAL.pendingCoords = { lat, lon: lng, name };
   document.getElementById('mapSearchInput').value = name;
@@ -2605,8 +2655,10 @@ function _updateCenterPinCoords() {
   const field = MAP_MODAL.activeField;
   const inst  = MAP_MODAL.mapInstances[field];
   if (!inst) return;
-  const c = inst.map.getCenter();
-  MAP_MODAL.pendingCoords = { lat: c.lat, lon: c.lng, name: document.getElementById('mapSearchInput').value || 'Selected location' };
+  const c    = inst.map.getCenter();
+  // Preserve the existing search text if any; never show raw numbers
+  const existingName = document.getElementById('mapSearchInput').value.trim() || 'Selected location';
+  MAP_MODAL.pendingCoords = { lat: c.lat, lon: c.lng, name: existingName };
   document.getElementById('confirmLocBtn').disabled = false;
 }
 
