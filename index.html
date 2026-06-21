@@ -622,6 +622,43 @@
       margin-top:auto;
     }
 
+    /* ── LOCATION AUTOCOMPLETE ───────────────────────── */
+    .route-field-wrap{position:relative;}
+    .ac-dropdown{
+      position:absolute;left:0;right:0;top:calc(100% + 4px);
+      background:var(--surface);border:1.5px solid var(--border);
+      border-radius:var(--r-md);box-shadow:var(--shadow-lg);
+      z-index:500;overflow:hidden;
+      display:none;
+    }
+    .ac-dropdown.open{display:block;}
+    .ac-item{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.7rem 1rem;cursor:pointer;
+      font-size:.88rem;font-weight:600;color:var(--text);
+      border-bottom:1px solid var(--border);
+      transition:background .12s;
+    }
+    .ac-item:last-child{border-bottom:none;}
+    .ac-item:hover,.ac-item.focused{background:var(--surface-2);}
+    .ac-item-icon{
+      width:28px;height:28px;border-radius:8px;
+      background:#EEF4FF;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .ac-item-main{display:flex;flex-direction:column;gap:.1rem;min-width:0;}
+    .ac-item-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ac-item-country{font-size:.75rem;color:var(--text-2);font-weight:600;}
+    .ac-loading{
+      padding:.8rem 1rem;font-size:.83rem;color:var(--text-2);
+      font-weight:600;display:flex;align-items:center;gap:.5rem;
+    }
+    .ac-spinner{
+      width:.85rem;height:.85rem;border-radius:50%;
+      border:2px solid var(--border);border-top-color:var(--primary);
+      animation:spin .6s linear infinite;flex-shrink:0;
+    }
+
     /* ══════════════════════════════════════════════════
        MOBILE-FIRST RESPONSIVE  (max-width: 600px)
     ══════════════════════════════════════════════════ */
@@ -814,15 +851,17 @@
           <div class="route-box">
             <!-- FROM field -->
             <div class="route-field" style="position:relative;">
-              <!-- dotted connector line drawn as pseudo — position relative to pin -->
               <div class="route-line-wrap"></div>
               <div class="route-pin">
                 <div class="route-pin-dot pin-from"></div>
               </div>
               <div class="route-field-inner">
                 <span class="route-field-lbl">From</span>
-                <input class="route-input" type="text" id="fromInput"
-                  value="Biñan" placeholder="Starting point" autocomplete="off" required>
+                <div class="route-field-wrap">
+                  <input class="route-input" type="text" id="fromInput"
+                    value="Biñan" placeholder="Starting point" autocomplete="off" required>
+                  <div class="ac-dropdown" id="acFrom"></div>
+                </div>
               </div>
             </div>
 
@@ -833,11 +872,13 @@
               </div>
               <div class="route-field-inner">
                 <span class="route-field-lbl">To</span>
-                <input class="route-input" type="text" id="toInput"
-                  value="" placeholder="Where are you going?" autocomplete="off">
+                <div class="route-field-wrap">
+                  <input class="route-input" type="text" id="toInput"
+                    value="" placeholder="Where are you going?" autocomplete="off">
+                  <div class="ac-dropdown" id="acTo"></div>
+                </div>
               </div>
-              <!-- Swap button sits on the divider between the two fields -->
-              <button type="button" class="route-swap" onclick="swapRoute()" title="Swap origin and destination" aria-label="Swap">
+              <button type="button" class="route-swap" onclick="swapRoute()" title="Swap" aria-label="Swap">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/>
                   <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
@@ -1255,11 +1296,12 @@
   Biyahe News ✦ Smart Commuter Assistant &nbsp;·&nbsp; <span id="footer-time"></span>
 </footer>
 
+<script src="config.js"></script>
 <script>
   /* ── CONFIG ────────────────────────────────────── */
   const CFG = {
-    weatherKey: 'e165df0b18208802bfb6bc67d4ba8884',
-    trafficKey: 'vbHF2xqBFbqM48ClL3w6qi7LuwqdxYlJ',
+    weatherKey: (window.APP_KEYS || {}).weatherKey || '',
+    trafficKey:  (window.APP_KEYS || {}).trafficKey  || '',
     defaultCity: 'Biñan',
     defaultCoords: { lat: 14.3122, lon: 121.0914 }
   };
@@ -1283,6 +1325,7 @@
     syncBudgetControls();
     initNav();
     refreshStatusDots();
+    initAutocomplete();
   });
 
   /* ── NAV ───────────────────────────────────────── */
@@ -1412,6 +1455,122 @@
       btn.style.background = '';
       btn.style.color = '';
     }, 300);
+  }
+
+  /* ── LOCATION AUTOCOMPLETE ──────────────────────── */
+  // Uses OWM Geocoding API — same key as weather, free, no extra signup
+  const acState = { from: { timer: null, idx: -1 }, to: { timer: null, idx: -1 } };
+
+  function initAutocomplete() {
+    setupAC('fromInput', 'acFrom', 'from');
+    setupAC('toInput',   'acTo',   'to');
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.route-field-wrap')) { closeAC('from'); closeAC('to'); }
+    });
+  }
+
+  function setupAC(inputId, dropId, key) {
+    const inp  = document.getElementById(inputId);
+    const drop = document.getElementById(dropId);
+
+    inp.addEventListener('input', () => {
+      clearTimeout(acState[key].timer);
+      const q = inp.value.trim();
+      if (q.length < 2) { closeAC(key); return; }
+      showACLoading(drop);
+      acState[key].timer = setTimeout(() => fetchAC(q, drop, inp, key), 350);
+    });
+
+    inp.addEventListener('keydown', e => {
+      if (!drop.classList.contains('open')) return;
+      const items = drop.querySelectorAll('.ac-item[data-name]');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        acState[key].idx = Math.min(acState[key].idx + 1, items.length - 1);
+        highlightAC(items, acState[key].idx);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        acState[key].idx = Math.max(acState[key].idx - 1, 0);
+        highlightAC(items, acState[key].idx);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const focused = drop.querySelector('.ac-item.focused');
+        if (focused) focused.click();
+      } else if (e.key === 'Escape') {
+        closeAC(key);
+      }
+    });
+
+    inp.addEventListener('focus', () => {
+      if (inp.value.trim().length >= 2 && drop.querySelector('.ac-item[data-name]')) {
+        drop.classList.add('open');
+      }
+    });
+  }
+
+  async function fetchAC(query, drop, inp, key) {
+    const wKey = CFG.weatherKey;
+    if (!wKey) { closeAC(key); return; }
+    try {
+      const url  = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${wKey}`;
+      const res  = await fetch(url);
+      if (!res.ok) throw new Error('geo fail');
+      const data = await res.json();
+      renderAC(data, drop, inp, key);
+    } catch (_) {
+      closeAC(key);
+    }
+  }
+
+  function renderAC(results, drop, inp, key) {
+    acState[key].idx = -1;
+    if (!results || results.length === 0) {
+      drop.innerHTML = `<div class="ac-item" style="opacity:.55;cursor:default;pointer-events:none">No results found</div>`;
+      drop.classList.add('open');
+      return;
+    }
+    drop.innerHTML = results.map(r => {
+      const name    = (r.local_names && (r.local_names.tl || r.local_names.en)) || r.name;
+      const detail  = [r.state, r.country].filter(Boolean).join(', ');
+      return `<div class="ac-item" data-name="${escHtml(r.name)}">
+        <div class="ac-item-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="ac-item-main">
+          <span class="ac-item-name">${escHtml(name)}</span>
+          <span class="ac-item-country">${escHtml(detail)}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    drop.querySelectorAll('.ac-item[data-name]').forEach(item => {
+      item.addEventListener('mousedown', e => {
+        e.preventDefault();
+        inp.value = item.dataset.name;
+        closeAC(key);
+      });
+    });
+    drop.classList.add('open');
+  }
+
+  function showACLoading(drop) {
+    drop.innerHTML = `<div class="ac-loading"><div class="ac-spinner"></div>Searching…</div>`;
+    drop.classList.add('open');
+  }
+
+  function closeAC(key) {
+    const id = key === 'from' ? 'acFrom' : 'acTo';
+    const drop = document.getElementById(id);
+    if (drop) { drop.classList.remove('open'); acState[key].idx = -1; }
+  }
+
+  function highlightAC(items, idx) {
+    items.forEach((el, i) => el.classList.toggle('focused', i === idx));
+    if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   /* ── SHOW / HIDE KEY ───────────────────────────── */
