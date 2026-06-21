@@ -289,10 +289,14 @@
     @keyframes slideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
     /* card accent themes */
-    .result-card.stay  {background:#FFF8EC;border-color:#F5DFA0;}
-    .result-card.active{background:#EDF7ED;border-color:#B3DDB3;}
-    .result-card.optimal{background:#EBF5FE;border-color:#A8D8F0;}
-    .result-card.welfare{background:#EBF5FE;border-color:#A8D8F0;}
+    .result-card.stay    {background:#FFF8EC;border-color:#F5DFA0;}
+    .result-card.active  {background:#EDF7ED;border-color:#B3DDB3;}
+    .result-card.optimal {background:#EBF5FE;border-color:#A8D8F0;}
+    .result-card.welfare {background:#EBF5FE;border-color:#A8D8F0;}
+    .result-card.ridehail_comfort  {background:#F0EBFE;border-color:#C3B5F5;}
+    .result-card.ridehail_express  {background:#F0EBFE;border-color:#C3B5F5;}
+    .result-card.ridehail_optional {background:#EBF5FE;border-color:#A8D8F0;}
+    .result-card.plan_long {background:#FFF8EC;border-color:#F5DFA0;}
 
     .rc-header{
       display:flex;align-items:center;justify-content:space-between;
@@ -804,6 +808,22 @@
             <div class="dash-sub" id="dashTrafficSub"></div>
             <div class="speed-bar" id="speedBar" style="display:none"><div class="speed-fill" id="speedFill"></div></div>
           </div>
+          <div class="dash-item">
+            <div class="dash-lbl">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              Budget
+            </div>
+            <div class="dash-val" id="dashBudget">—</div>
+            <div class="dash-sub" id="dashBudgetSub"></div>
+          </div>
+          <div class="dash-item">
+            <div class="dash-lbl">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Distance
+            </div>
+            <div class="dash-val" id="dashDist">—</div>
+            <div class="dash-sub" id="dashDistSub"></div>
+          </div>
         </div>
       </div>
 
@@ -1255,6 +1275,8 @@
     let weatherMeta  = null;
     let trafficMeta  = null;
     let coords       = CFG.defaultCoords;
+    let distKm       = null;   // straight-line km between From and To
+    let distClass    = 'UNKNOWN'; // SHORT / MEDIUM / LONG / UNKNOWN
 
     /* ── Step A: Weather ─────────────────────────── */
     try {
@@ -1293,6 +1315,25 @@
       }
       toast(`Weather fetch failed: ${e.message}`, 'err');
       return;
+    }
+
+    /* ── Step B: Geocode destination → compute distance ── */
+    if (S.to) {
+      try {
+        const gUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(S.to)}&appid=${wKey}`;
+        const gRes = await fetch(gUrl);
+        if (gRes.ok) {
+          const gd = await gRes.json();
+          const destCoords = { lat: gd.coord.lat, lon: gd.coord.lon };
+          distKm = haversineKm(coords, destCoords);
+          S.distKm = distKm;
+          if      (distKm <  5)  distClass = 'SHORT';
+          else if (distKm < 20)  distClass = 'MEDIUM';
+          else                   distClass = 'LONG';
+        }
+      } catch (_) {
+        // Destination geocode failed — proceed without distance
+      }
     }
 
     /* ── Step B: Traffic (TomTom Flow → weather fallback) ── */
@@ -1335,79 +1376,147 @@
     }
 
     setLoading(false);
-    renderResult(weatherState, trafficState, weatherMeta, trafficMeta);
+    renderResult(weatherState, trafficState, weatherMeta, trafficMeta, distKm, distClass);
+  }
+
+  /* ── HAVERSINE DISTANCE (km) ───────────────────── */
+  function haversineKm(a, b) {
+    const R = 6371;
+    const dLat = (b.lat - a.lat) * Math.PI / 180;
+    const dLon = (b.lon - a.lon) * Math.PI / 180;
+    const x = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(a.lat * Math.PI/180) * Math.cos(b.lat * Math.PI/180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
   }
 
   /* ── TRAFFIC INFERENCE FROM WEATHER ────────────── */
-  // When no traffic API is available, we estimate congestion using
-  // weather context: rain/storms historically correlate with 30-60%
-  // speed drops on Philippine roads due to flooding and poor visibility.
   function inferTrafficFromWeather(wMeta) {
     if (!wMeta) return 'TRAFFIC_LOW';
     const desc = (wMeta.desc || '').toLowerCase();
-    const isStorm = /thunder|storm|heavy rain|squall/i.test(desc);
-    const isRain  = /rain|drizzle/i.test(desc);
-    if (isStorm) return 'TRAFFIC_HIGH';
-    if (isRain)  return 'TRAFFIC_HIGH'; // rain reliably causes congestion in PH
+    if (/thunder|storm|heavy rain|squall/i.test(desc)) return 'TRAFFIC_HIGH';
+    if (/rain|drizzle/i.test(desc)) return 'TRAFFIC_HIGH';
     return 'TRAFFIC_LOW';
   }
 
   /* ── RECOMMENDATION MATRIX ─────────────────────── */
-  function decideCondition(budget, energy, weather, traffic) {
-    const bLow  = budget < 100;
-    const bHigh = budget > 250;
+  // Budget tiers:  LOW < ₱100  |  NORMAL ₱100–₱250  |  HIGH > ₱250
+  // Distance:      SHORT < 5km  |  MEDIUM 5–20km  |  LONG > 20km
+  function decideCondition(budget, energy, weather, traffic, distClass) {
+    const bLow    = budget < 100;
+    const bNormal = budget >= 100 && budget <= 250;
+    const bHigh   = budget > 250;
+    const isLong  = distClass === 'LONG';
+    const isMed   = distClass === 'MEDIUM';
 
-    // Cond 1: High financial + physical risk
+    // ── 1. High Risk: broke + exhausted + bad conditions ──────────────
     if (bLow && energy === 'EXHAUSTED' && (weather === 'RAINY' || traffic === 'TRAFFIC_HIGH')) {
       return 'stay';
     }
-    // Cond 2: High energy bypass
+
+    // ── 2. Ride-hail: high budget + bad weather or long distance ──────
+    if (bHigh && weather === 'RAINY' && energy === 'EXHAUSTED') {
+      return 'ridehail_comfort';
+    }
+    if (bHigh && (isLong || isMed) && traffic === 'TRAFFIC_HIGH') {
+      return 'ridehail_express';
+    }
+    if (bHigh && weather === 'RAINY' && (isLong || isMed)) {
+      return 'ridehail_comfort';
+    }
+
+    // ── 3. Normal budget + rain + exhausted → motorcycle taxi ─────────
+    if (bNormal && energy === 'EXHAUSTED' && weather === 'RAINY') {
+      return 'welfare';
+    }
+
+    // ── 4. Low budget + energized + clear but jammed → walk bypass ────
     if (bLow && energy === 'ENERGIZED' && weather === 'CLEAR' && traffic === 'TRAFFIC_HIGH') {
       return 'active';
     }
-    // Cond 3: Budget priority comfort (welfare)
-    if (!bLow && energy === 'EXHAUSTED' && weather === 'RAINY') {
-      return 'welfare';
+
+    // ── 5. Long distance + low budget + normal energy → plan carefully ─
+    if (bLow && isLong && energy === 'NORMAL') {
+      return 'plan_long';
     }
-    // Cond 4: Optimal baseline
+
+    // ── 6. High budget + clear + low traffic → optional upgrade ────────
+    if (bHigh && weather === 'CLEAR' && traffic === 'TRAFFIC_LOW') {
+      return 'ridehail_optional';
+    }
+
+    // ── 7. Baseline: everything manageable ────────────────────────────
     return 'optimal';
   }
 
-  const CONTENT = {
-    stay: {
-      icon: '🛑',
-      badge: 'High Risk · Stay',
-      action: '🛑 Do Not Commute Yet — Wait in Campus',
-      justify: 'Commuting right now will force you into expensive ride-hailing surges or trap you in rain-induced gridlock while physically depleted.',
-      tip: 'Head to the university library or student lounge for 1–1.5 hours. Charge your device, download course materials for offline viewing, and let fares settle before leaving.'
-    },
-    active: {
-      icon: '🚶',
-      badge: 'Active Bypass',
-      action: '🚶‍♂️ Bypass Bottlenecks via Active Transit',
-      justify: 'Traffic is locked on the main road, but the weather is fine and you have the stamina to bypass the gridlock on foot.',
-      tip: 'Walk to an alternative transit terminal 10–15 minutes away past the main bottleneck. You\'ll skip the high-fare tricycle traps, skip terminal queues, and secure a cheaper jeepney or bus slot ahead of the crowd.'
-    },
-    welfare: {
-      icon: '🛵',
-      badge: 'Priority Welfare',
-      action: '🛵 Prioritize Welfare — Use High-Efficiency Transit',
-      justify: 'You have enough financial buffer, but extreme fatigue plus rain significantly increases accident and illness risk.',
-      tip: 'Allocate an extra ₱50–₱100 for a direct motorcycle taxi or carpool booking. Prioritize getting home quickly and dry over cutting transit costs today.'
-    },
-    optimal: {
-      icon: '🚌',
-      badge: 'Green Light',
-      action: '🚌 Green Light for Mass Transit',
-      justify: 'External conditions are completely stable. Travel times and fare structures are at baseline — ideal window to commute normally.',
-      tip: 'Proceed via your standard jeepney, train, or bus route. Use the smooth travel window to catch up on a podcast or review your flashcards.'
-    }
-  };
+  // Dynamic CONTENT — takes distance string for tip personalization
+  function buildContent(distKm, distClass) {
+    const distStr = distKm != null ? `${distKm.toFixed(1)} km` : 'your route';
+    const distLabel = distClass === 'SHORT'  ? `short trip (${distStr})`
+                    : distClass === 'MEDIUM' ? `medium trip (${distStr})`
+                    : distClass === 'LONG'   ? `long trip (${distStr})`
+                    : distStr;
 
-  function renderResult(weatherState, trafficState, weatherMeta, trafficMeta) {
+    return {
+      stay: {
+        icon: '🛑', badge: 'High Risk · Stay',
+        action: '🛑 Do Not Commute Yet — Wait in Campus',
+        justify: 'Your budget is too low to absorb surge pricing, and commuting while exhausted in bad conditions is a real safety and financial risk right now.',
+        tip: 'Stay in the library or student lounge for 1–1.5 hours. Charge your device, let fares drop, and leave when conditions improve.'
+      },
+      ridehail_comfort: {
+        icon: '🚗', badge: 'Ride-Hail Recommended',
+        action: '🚗 Book a Ride-Hailing App Now',
+        justify: `You have the budget for it and conditions make mass transit miserable — rain, fatigue, and a ${distLabel} is a bad combination for jeepneys right now.`,
+        tip: `Open Grab or InDrive and book a direct trip. With ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 150)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 250)} estimated fare, it's worth every peso to get home dry and rested.`
+      },
+      ridehail_express: {
+        icon: '🚗', badge: 'Express Option · High Budget',
+        action: '🚗 Consider Ride-Hailing to Beat the Jam',
+        justify: `Traffic is heavy and ${distLabel} via mass transit could take significantly longer. Your budget can cover a direct ride.`,
+        tip: `Check Grab or InDrive for current prices. Estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. If surge is under 1.5x, book it — the time saved is worth it.`
+      },
+      ridehail_optional: {
+        icon: '✨', badge: 'Your Choice · Conditions Clear',
+        action: '🚌 Mass Transit or Ride-Hail — Both Work',
+        justify: `Conditions are great and you have plenty of budget. Mass transit is totally fine for a ${distLabel}, but a ride-hailing app is also a comfortable option at no real sacrifice.`,
+        tip: distClass === 'SHORT'
+          ? `At ${distStr}, jeepney or tricycle is honestly ideal. Save the ride-hail budget for a longer or worse day.`
+          : `Grab or InDrive estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. Standard route is also smooth — your call.`
+      },
+      welfare: {
+        icon: '🛵', badge: 'Priority Welfare',
+        action: '🛵 Motorcycle Taxi — Get Home Safe',
+        justify: `Rain plus exhaustion is a risk multiplier. For a ${distLabel}, standing in the rain waiting for mass transit is not worth the ₱50 you'd save.`,
+        tip: 'Book an Angkas or Joyride motorcycle taxi. Direct, covered, and faster than jeepney queues in the rain. Budget ₱60–₱150 depending on distance.'
+      },
+      active: {
+        icon: '🚶', badge: 'Active Bypass',
+        action: '🚶‍♂️ Walk Past the Bottleneck',
+        justify: `Traffic is jammed but you have the energy and the weather is clear. For a ${distLabel}, walking to a better terminal is faster than waiting in the queue.`,
+        tip: 'Walk 10–15 minutes past the main bottleneck terminal. You\'ll skip tricycle surge pricing, find a cheaper jeepney slot ahead of the crowd, and save ₱20–₱40.'
+      },
+      plan_long: {
+        icon: '🗺️', badge: 'Long Route · Plan Smart',
+        action: '🗺️ Plan Your Segments Carefully',
+        justify: `${distLabel} on a low budget means every transfer matters. One wrong choice and you're stuck mid-route with no fare left.`,
+        tip: 'Map out each leg: jeepney → UV Express or P2P bus → tricycle/trike for the last mile. Avoid taxis or tricycles for long segments. Target ₱60–₱90 total fare by using buses for the longest stretch.'
+      },
+      optimal: {
+        icon: '🚌', badge: 'Green Light',
+        action: '🚌 Green Light — Take Your Standard Route',
+        justify: `Conditions are stable for ${distLabel}. Traffic is moving, weather is clear — this is your ideal commute window.`,
+        tip: 'Take your usual jeepney, UV Express, or bus route now. Use the smooth ride to listen to a podcast or review notes.'
+      }
+    };
+  }
+
+  function renderResult(weatherState, trafficState, weatherMeta, trafficMeta, distKm, distClass) {
     const b   = parseInt(document.getElementById('budgetInput').value) || 0;
     const e   = (document.querySelector('input[name="energy"]:checked') || {}).value || 'NORMAL';
-    const cond = decideCondition(b, e, weatherState, trafficState);
+    const dc  = distClass || 'UNKNOWN';
+    const cond = decideCondition(b, e, weatherState, trafficState, dc);
+    const CONTENT = buildContent(distKm, dc);
     const c    = CONTENT[cond];
 
     // Update card
@@ -1459,6 +1568,24 @@
     } else {
       document.getElementById('dashTrafficSub').textContent = 'No traffic data';
       speedBar.style.display = 'none';
+    }
+
+    // Budget dash
+    const budgetLabels = { LOW: ['🔴','Low','Under ₱100'], NORMAL: ['🟡','Normal','₱100–₱250'], HIGH: ['🟢','High','Over ₱250'] };
+    const bTier = b < 100 ? 'LOW' : b <= 250 ? 'NORMAL' : 'HIGH';
+    const [bIcon, bLabel, bRange] = budgetLabels[bTier];
+    document.getElementById('dashBudget').innerHTML = `${bIcon} ₱${b} <span style="font-size:.75rem;opacity:.6">(${bLabel})</span>`;
+    document.getElementById('dashBudgetSub').textContent = bRange;
+
+    // Distance dash
+    if (distKm != null) {
+      const dLabel = dc === 'SHORT' ? 'Short' : dc === 'MEDIUM' ? 'Medium' : 'Long';
+      const dIcon  = dc === 'SHORT' ? '🟢' : dc === 'MEDIUM' ? '🟡' : '🔴';
+      document.getElementById('dashDist').innerHTML = `${dIcon} ${distKm.toFixed(1)} km`;
+      document.getElementById('dashDistSub').textContent = `${dLabel} distance (straight-line)`;
+    } else {
+      document.getElementById('dashDist').textContent = S.to ? 'Calculating…' : 'No destination set';
+      document.getElementById('dashDistSub').textContent = S.to ? '' : 'Enter a "To" location above';
     }
 
     // Hide waiting card
