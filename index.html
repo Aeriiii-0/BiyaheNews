@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Biyahe News — Smart Commuter Assistant</title>
+  <title>Biyahe News â€” Smart Commuter Assistant</title>
   <meta name="description" content="Personalized commute recommendations for students based on budget, energy, live weather and traffic.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
   <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
   <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/services/services-web.min.js"></script>
   <style>
-    /* ── DESIGN TOKENS ─────────────────────────────────── */
+    /* â”€â”€ DESIGN TOKENS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     :root {
       --bg:          #F2F5FB;
       --surface:     #FFFFFF;
@@ -47,7 +47,7 @@
       display:flex;flex-direction:column;
     }
 
-    /* ── HEADER ──────────────────────────────────────── */
+    /* â”€â”€ HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .site-header{
       position:sticky;top:0;z-index:200;
       background:rgba(255,255,255,.82);
@@ -81,7 +81,7 @@
     .chip-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;}
     #live-clock{font-variant-numeric:tabular-nums;}
 
-    /* ── NAV TABS ─────────────────────────────────────── */
+    /* â”€â”€ NAV TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .nav-tabs{
       display:flex;align-items:center;gap:.25rem;
       background:var(--surface-2);border-radius:50px;padding:.25rem;
@@ -96,7 +96,7 @@
     .nav-tab.active{background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm);}
     .nav-tab:hover:not(.active){color:var(--text);}
 
-    /* ── MAIN LAYOUT ─────────────────────────────────── */
+    /* â”€â”€ MAIN LAYOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .page{display:none;flex:1;}
     .page.active{display:block;}
     .main-grid{
@@ -108,7 +108,7 @@
     }
     @media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
 
-    /* ── CARDS ───────────────────────────────────────── */
+    /* â”€â”€ CARDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .card{
       background:var(--surface);
       border-radius:var(--r-lg);
@@ -129,7 +129,7 @@
       flex-shrink:0;
     }
 
-    /* ── FORM ELEMENTS ───────────────────────────────── */
+    /* â”€â”€ FORM ELEMENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .form-group{margin-bottom:1.35rem;}
     .form-label{
       display:flex;align-items:center;gap:.4rem;
@@ -203,7 +203,7 @@
     .energy-option input:checked + .energy-label .energy-emoji{transform:scale(1.2) rotate(-5deg);}
     .energy-label:hover{background:var(--surface);border-color:var(--primary);}
 
-    /* ── ACTION BUTTON ───────────────────────────────── */
+    /* â”€â”€ ACTION BUTTON â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .btn-primary{
       width:100%;padding:1rem 1.5rem;
       border:none;border-radius:var(--r-md);
@@ -230,7 +230,7 @@
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ── API KEY PANEL ───────────────────────────────── */
+    /* â”€â”€ API KEY PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .key-panel{
       margin-top:1.25rem;border-radius:var(--r-md);
       border:1.5px dashed var(--border);overflow:hidden;
@@ -266,7 +266,7 @@
     }
     .btn-ghost:hover{background:var(--surface-2);border-color:var(--primary);}
 
-    /* ── BROADCAST PANEL (right col) ─────────────────── */
+    /* â”€â”€ BROADCAST PANEL (right col) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .broadcast-col{display:flex;flex-direction:column;gap:1.25rem;}
 
     /* waiting state */
@@ -344,7 +344,7 @@
     .speed-bar{height:5px;border-radius:3px;background:rgba(0,0,0,.08);margin-top:.5rem;overflow:hidden;}
     .speed-fill{height:100%;border-radius:3px;transition:width .5s var(--ease);}
 
-    /* ── ABOUT PAGE ──────────────────────────────────── */
+    /* â”€â”€ ABOUT PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .about-wrap{max-width:760px;margin:0 auto;padding:3rem 1.5rem 5rem;}
     .about-hero{
       background:linear-gradient(135deg,#EEF4FF,#F5EFFE);
@@ -411,7 +411,7 @@
       border:1.5px solid var(--border);background:var(--surface-2);
     }
 
-    /* ── SETTINGS PAGE ───────────────────────────────── */
+    /* â”€â”€ SETTINGS PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .settings-wrap{max-width:680px;margin:0 auto;padding:3rem 1.5rem 5rem;}
     .settings-wrap h1{font-size:1.4rem;font-weight:900;margin-bottom:1.75rem;}
     .settings-card{
@@ -433,7 +433,7 @@
     .status-dot.ok{background:#2ECC71;}
     .status-dot.warn{background:#F39C12;}
 
-    /* ── TOAST ───────────────────────────────────────── */
+    /* â”€â”€ TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     #toasts{
       position:fixed;bottom:1.75rem;right:1.75rem;
       display:flex;flex-direction:column;gap:.6rem;z-index:9999;pointer-events:none;
@@ -454,7 +454,7 @@
     @keyframes toastIn{to{opacity:1;transform:translateY(0)}}
     @keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
 
-    /* ── ROUTE BOX — maps navigation style ─────────── */
+    /* â”€â”€ ROUTE BOX â€” maps navigation style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .route-box{
       background:var(--surface);
       border:1.5px solid var(--border);
@@ -554,7 +554,7 @@
       border-radius:50%;background:var(--accent-rose);flex-shrink:0;
     }
 
-    /* ── TRAFFIC STATUS STATES ───────────────────────── */
+    /* â”€â”€ TRAFFIC STATUS STATES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .traffic-state-box{
       display:flex;align-items:center;gap:.65rem;
       padding:.65rem .9rem;border-radius:var(--r-sm);
@@ -564,7 +564,7 @@
     .traffic-state-box.warn{background:#FFF8EC;color:#7A5800;}
     .traffic-state-box.err {background:#FEF0EE;color:#A93226;}
 
-    /* ── KEY INPUT ROW ───────────────────────────────── */
+    /* â”€â”€ KEY INPUT ROW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .alert-banner{
       display:flex;gap:.65rem;align-items:flex-start;
       padding:1rem 1.1rem;border-radius:var(--r-md);
@@ -618,7 +618,7 @@
       margin-bottom:1.25rem;line-height:1.5;
     }
 
-    /* ── FOOTER ──────────────────────────────────────── */
+    /* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .site-footer{
       text-align:center;padding:1.5rem 2rem;
       border-top:1px solid var(--border);background:var(--surface);
@@ -626,185 +626,234 @@
       margin-top:auto;
     }
 
-    /* ── MAP MODAL OVERLAY ───────────────────────────── */
+    /* â”€â”€ MAP MODAL OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .map-modal-overlay{
       position:fixed;inset:0;z-index:9999;
-      background:rgba(30,40,60,.45);
-      backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
-      display:flex;flex-direction:column;justify-content:flex-end;
+      background:rgba(0,0,0,.3);
       opacity:0;pointer-events:none;
-      transition:opacity .28s var(--ease);
+      transition:opacity .25s var(--ease);
     }
     .map-modal-overlay.open{opacity:1;pointer-events:all;}
+
+    /* Full-screen modal sheet */
     .map-modal{
-      width:100%;
-      /* Use dvh so it responds to virtual keyboard on mobile */
-      height:92dvh;
-      max-height:96vh;
-      background:var(--surface);
-      border-radius:28px 28px 0 0;
-      display:flex;flex-direction:column;overflow:hidden;
+      position:absolute;inset:0;
+      background:transparent;
+      display:flex;flex-direction:column;
       transform:translateY(100%);
       transition:transform .32s cubic-bezier(.16,1,.3,1);
-      box-shadow:0 -8px 40px rgba(30,40,60,.18);
-      /* Ensure the modal itself never overflows the viewport */
-      box-sizing:border-box;
     }
     .map-modal-overlay.open .map-modal{transform:translateY(0);}
-    /* On small phones use the full screen height */
-    @media(max-height:680px){
-      .map-modal{ height:100dvh; border-radius:0; }
-    }
-    @media(max-width:600px){
-      .map-modal{ height:100dvh; border-radius:20px 20px 0 0; }
-    }
 
-    /* drag handle */
-    .modal-handle{
-      width:44px;height:5px;border-radius:3px;
-      background:var(--border);margin:.7rem auto .2rem;flex-shrink:0;
-    }
-    /* modal top bar */
-    .modal-topbar{
-      display:flex;align-items:center;gap:.75rem;
-      padding:.6rem 1rem .75rem;flex-shrink:0;
-    }
-    .modal-back{
-      width:36px;height:36px;border-radius:50%;
-      border:1.5px solid var(--border);background:var(--surface-2);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;color:var(--text-2);flex-shrink:0;
-      transition:all .15s;
-    }
-    .modal-back:hover{background:var(--border);color:var(--text);}
-    .modal-title{font-size:1rem;font-weight:800;color:var(--text);}
-
-    /* search bar inside modal */
-    .modal-search-wrap{
-      padding:0 1rem .75rem;flex-shrink:0;position:relative;
-    }
-    .modal-search-input{
-      width:100%;padding:.82rem 1rem .82rem 2.6rem;
-      border-radius:var(--r-md);
-      border:2px solid var(--border);
-      background:var(--surface-2);
-      font-family:inherit;font-size:.97rem;font-weight:600;
-      color:var(--text);transition:all .18s var(--ease);
-    }
-    .modal-search-input:focus{
-      outline:none;border-color:var(--primary);background:var(--surface);
-      box-shadow:0 0 0 4px rgba(123,179,240,.15);
-    }
-    .modal-search-input::placeholder{color:var(--text-3);font-weight:500;}
-    .modal-search-icon{
-      position:absolute;left:1.9rem;top:50%;transform:translateY(-50%);
-      color:var(--text-3);pointer-events:none;
-    }
-
-    /* suggestions dropdown */
-    .modal-suggestions{
-      position:absolute;left:1rem;right:1rem;top:calc(100% - .75rem);
-      background:var(--surface);border:1.5px solid var(--border);
-      border-radius:var(--r-md);box-shadow:var(--shadow-lg);
-      z-index:10002;overflow:hidden;max-height:260px;overflow-y:auto;
-      display:none;
-    }
-    .modal-suggestions.open{display:block;}
-    .sugg-item{
-      display:flex;align-items:center;gap:.75rem;
-      padding:.75rem 1rem;cursor:pointer;
-      font-size:.9rem;font-weight:600;color:var(--text);
-      border-bottom:1px solid var(--border);
-      transition:background .12s;
-    }
-    .sugg-item:last-child{border-bottom:none;}
-    .sugg-item:hover,.sugg-item.focused{background:var(--surface-2);}
-    .sugg-icon{
-      width:32px;height:32px;border-radius:10px;
-      background:#EEF4FF;flex-shrink:0;
-      display:flex;align-items:center;justify-content:center;
-    }
-    .sugg-main{display:flex;flex-direction:column;gap:.1rem;min-width:0;}
-    .sugg-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .sugg-detail{font-size:.75rem;color:var(--text-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .sugg-loading{
-      padding:.9rem 1rem;font-size:.85rem;color:var(--text-2);
-      font-weight:600;display:flex;align-items:center;gap:.55rem;
-    }
-    .sugg-spinner{
-      width:.9rem;height:.9rem;border-radius:50%;
-      border:2px solid var(--border);border-top-color:var(--primary);
-      animation:spin .6s linear infinite;flex-shrink:0;
-    }
-
-    /* map viewport */
+    /* â”€â”€ MAP FILLS EVERYTHING â”€â”€ */
     .modal-map-area{
-      /* flex:1 + min-height:0 is the correct pattern for a flex child
-         that should fill remaining vertical space without overflowing */
-      flex:1;min-height:0;
-      position:relative;background:#E8EDF6;
-      overflow:hidden;
+      position:absolute;inset:0;
+      background:#dde8f0;
+      z-index:1;
     }
     #mapFromEl,#mapToEl{
       width:100%;height:100%;
     }
-    /* custom marker */
-    .map-pin-marker{
-      width:36px;height:36px;
-      background:var(--primary);border-radius:50% 50% 50% 0;
-      transform:rotate(-45deg);border:3px solid #fff;
-      box-shadow:0 3px 12px rgba(91,150,220,.45);
+    /* Remove TomTom default controls â€” we add our own */
+    .map-modal-overlay .mapboxgl-ctrl-top-right,
+    .map-modal-overlay .mapboxgl-ctrl-bottom-right,
+    .map-modal-overlay .tt-ctrl-group{ display:none !important; }
+
+    /* â”€â”€ FLOATING TOP BAR (search + back) â”€â”€ */
+    .modal-float-top{
+      position:absolute;top:0;left:0;right:0;
+      z-index:20;
+      padding:env(safe-area-inset-top,.6rem) .75rem .6rem;
+      display:flex;align-items:center;gap:.6rem;
+      pointer-events:none;
+    }
+    .modal-float-top > *{ pointer-events:all; }
+
+    .modal-back{
+      width:42px;height:42px;border-radius:50%;
+      border:none;background:#fff;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text);flex-shrink:0;
+      box-shadow:0 2px 12px rgba(0,0,0,.18);
+      transition:all .15s;
+    }
+    .modal-back:hover{ background:var(--surface-2); }
+    .modal-back:active{ transform:scale(.93); }
+
+    /* Floating search pill */
+    .modal-search-pill{
+      flex:1;
+      background:#fff;
+      border-radius:50px;
+      box-shadow:0 2px 12px rgba(0,0,0,.18);
+      display:flex;align-items:center;
+      gap:.5rem;padding:.0 1rem .0 .85rem;
+      min-width:0;height:42px;
       position:relative;
     }
-    .map-pin-marker::after{
-      content:'';position:absolute;
-      width:10px;height:10px;background:#fff;
-      border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);
+    .modal-search-pill svg{ flex-shrink:0;color:var(--text-3); }
+    .modal-search-input{
+      flex:1;border:none;background:transparent;outline:none;
+      font-family:inherit;font-size:.93rem;font-weight:600;
+      color:var(--text);min-width:0;height:100%;
     }
-    /* crosshair center pin overlay for drag */
-    .map-center-pin{
-      position:absolute;left:50%;top:50%;z-index:100;
-      transform:translate(-50%,-100%);
-      pointer-events:none;
-      transition:transform .15s;
+    .modal-search-input::placeholder{ color:var(--text-3);font-weight:500; }
+    .modal-search-clear{
+      width:22px;height:22px;border-radius:50%;
+      background:var(--border);border:none;cursor:pointer;
+      display:none;align-items:center;justify-content:center;
+      color:var(--text-2);flex-shrink:0;
+      transition:background .12s;
     }
-    .map-center-pin.dragging{transform:translate(-50%,-115%) scale(1.1);}
+    .modal-search-clear.visible{ display:flex; }
+    .modal-search-clear:hover{ background:#ddd; }
 
-    /* demo fallback list */
-    .demo-list-wrap{
-      flex:1;min-height:0;
-      overflow-y:auto;padding:.5rem .75rem 1rem;
-      -webkit-overflow-scrolling:touch;
+    /* Suggestions dropdown (floats below pill) */
+    .modal-suggestions{
+      position:absolute;left:0;right:0;top:calc(100% + 6px);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 8px 32px rgba(0,0,0,.16);
+      z-index:10002;overflow:hidden;
+      max-height:280px;overflow-y:auto;
+      display:none;
     }
-    .demo-notice{
-      display:flex;align-items:center;gap:.5rem;
-      background:#FFF8EC;border:1.5px solid #F5DFA0;
-      border-radius:var(--r-md);padding:.75rem 1rem;
-      font-size:.82rem;font-weight:700;color:#7A5800;
-      margin-bottom:1rem;
-    }
-    .demo-option{
+    .modal-suggestions.open{ display:block; }
+    .sugg-item{
       display:flex;align-items:center;gap:.75rem;
-      padding:.85rem 1rem;border-radius:var(--r-md);
-      cursor:pointer;background:var(--surface-2);
-      border:1.5px solid var(--border);margin-bottom:.55rem;
-      transition:all .15s var(--ease);
-      font-weight:700;font-size:.92rem;
+      padding:.75rem 1.1rem;cursor:pointer;
+      font-size:.9rem;font-weight:600;color:var(--text);
+      border-bottom:1px solid var(--border);
+      transition:background .1s;
     }
-    .demo-option:hover{border-color:var(--primary);background:#EEF4FF;color:var(--primary-dk);}
-    .demo-option-icon{
+    .sugg-item:last-child{ border-bottom:none; }
+    .sugg-item:hover,.sugg-item.focused{ background:var(--surface-2); }
+    .sugg-icon{
       width:34px;height:34px;border-radius:10px;
-      background:#EEF4FF;display:flex;align-items:center;justify-content:center;
-      flex-shrink:0;
+      background:#EEF4FF;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
     }
-    .demo-option-sub{font-size:.72rem;font-weight:600;color:var(--text-2);}
+    .sugg-main{ display:flex;flex-direction:column;gap:.1rem;min-width:0; }
+    .sugg-name{ font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .sugg-detail{ font-size:.73rem;color:var(--text-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .sugg-loading{
+      padding:.9rem 1.1rem;font-size:.85rem;color:var(--text-2);
+      font-weight:600;display:flex;align-items:center;gap:.6rem;
+    }
+    .sugg-spinner{
+      width:.85rem;height:.85rem;border-radius:50%;
+      border:2px solid var(--border);border-top-color:var(--primary);
+      animation:spin .6s linear infinite;flex-shrink:0;
+    }
 
-    /* confirm button */
-    .modal-confirm-bar{
-      padding:.85rem 1rem;padding-bottom:calc(.85rem + env(safe-area-inset-bottom));
-      background:var(--surface);border-top:1px solid var(--border);
-      flex-shrink:0;
+    /* â”€â”€ FLOATING RIGHT CONTROLS (zoom + my-location) â”€â”€ */
+    .modal-float-right{
+      position:absolute;right:.85rem;
+      bottom:calc(160px + env(safe-area-inset-bottom, 0px));
+      z-index:20;
+      display:flex;flex-direction:column;gap:.5rem;
+      pointer-events:none;
     }
+    .modal-float-right > *{ pointer-events:all; }
+    .map-ctrl-btn{
+      width:42px;height:42px;border-radius:50%;
+      background:#fff;border:none;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text-2);
+      box-shadow:0 2px 10px rgba(0,0,0,.16);
+      transition:all .15s;font-size:1rem;
+    }
+    .map-ctrl-btn:hover{ background:var(--surface-2);color:var(--primary); }
+    .map-ctrl-btn:active{ transform:scale(.92); }
+    .map-ctrl-sep{ height:1px;background:var(--border);margin:0 6px; }
+    .zoom-group{
+      background:#fff;border-radius:26px;
+      box-shadow:0 2px 10px rgba(0,0,0,.16);
+      overflow:hidden;display:flex;flex-direction:column;
+    }
+    .zoom-group .map-ctrl-btn{ border-radius:0;box-shadow:none; }
+    .zoom-group .map-ctrl-btn:first-child{ border-bottom:1px solid var(--border); }
+
+    /* â”€â”€ CENTER DROP-PIN â”€â”€ */
+    .map-center-pin{
+      position:absolute;left:50%;top:50%;z-index:20;
+      /* pin tip sits exactly at map center */
+      transform:translate(-50%, -100%);
+      pointer-events:none;
+      transition:transform .18s cubic-bezier(.34,1.56,.64,1), filter .18s;
+      /* drop shadow for depth */
+      filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));
+    }
+    .map-center-pin.lifting{
+      transform:translate(-50%, -115%) scale(1.12);
+      filter:drop-shadow(0 12px 16px rgba(0,0,0,.22));
+    }
+    /* Shadow ellipse on the ground */
+    .pin-shadow-wrap{
+      position:absolute;left:50%;
+      bottom:-6px;
+      transform:translateX(-50%);
+      pointer-events:none;z-index:19;
+      transition:opacity .18s, transform .18s;
+    }
+    .pin-shadow-wrap.lifting{
+      transform:translateX(-50%) scale(.6);
+      opacity:.4;
+    }
+
+    /* â”€â”€ BOTTOM LOCATION CARD â”€â”€ */
+    .modal-bottom-card{
+      position:absolute;left:0;right:0;bottom:0;
+      z-index:20;
+      background:#fff;
+      border-radius:24px 24px 0 0;
+      box-shadow:0 -4px 28px rgba(0,0,0,.14);
+      padding:1rem 1.1rem calc(1rem + env(safe-area-inset-bottom,.5rem));
+      pointer-events:all;
+      transform:translateY(0);
+      transition:transform .2s var(--ease);
+    }
+    /* drag pill */
+    .bottom-card-handle{
+      width:40px;height:4px;border-radius:2px;
+      background:var(--border);margin:0 auto .85rem;
+    }
+    /* address row */
+    .loc-card-row{
+      display:flex;align-items:flex-start;gap:.85rem;margin-bottom:1rem;
+    }
+    .loc-card-icon{
+      width:42px;height:42px;border-radius:14px;
+      flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    }
+    .loc-card-icon.from-icon{ background:#EEF4FF; }
+    .loc-card-icon.to-icon{ background:#FFF0F2; }
+    .loc-card-text{ flex:1;min-width:0; }
+    .loc-card-label{
+      font-size:.68rem;font-weight:800;text-transform:uppercase;
+      letter-spacing:.5px;color:var(--text-3);margin-bottom:.2rem;
+    }
+    .loc-card-name{
+      font-size:1rem;font-weight:800;color:var(--text);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .loc-card-detail{
+      font-size:.78rem;font-weight:600;color:var(--text-2);
+      margin-top:.15rem;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    /* resolving spinner inline */
+    .loc-resolving{
+      display:inline-flex;align-items:center;gap:.4rem;
+      font-size:.85rem;color:var(--text-3);font-weight:600;
+    }
+    .loc-resolving-spin{
+      width:.75rem;height:.75rem;border-radius:50%;
+      border:2px solid var(--border);border-top-color:var(--primary);
+      animation:spin .6s linear infinite;
+    }
+
+    /* Confirm button */
     .btn-confirm-loc{
       width:100%;padding:.95rem 1.5rem;
       border:none;border-radius:var(--r-md);
@@ -814,9 +863,42 @@
       box-shadow:0 5px 18px rgba(91,150,220,.28);
       transition:all .2s var(--ease);
     }
-    .btn-confirm-loc:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,150,220,.38);}
-    .btn-confirm-loc:active{transform:translateY(1px);}
-    .btn-confirm-loc:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+    .btn-confirm-loc:hover{ transform:translateY(-2px);box-shadow:0 8px 26px rgba(91,150,220,.38); }
+    .btn-confirm-loc:active{ transform:translateY(1px); }
+    .btn-confirm-loc:disabled{ opacity:.45;cursor:not-allowed;transform:none; }
+
+    /* Demo fallback â€” same bottom card but with a list above it */
+    .demo-list-wrap{
+      position:absolute;left:0;right:0;
+      top:calc(58px + env(safe-area-inset-top, 0px));
+      bottom:0;
+      z-index:20;
+      background:#fff;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      padding:.75rem;
+      display:none;
+    }
+    .demo-notice{
+      display:flex;align-items:center;gap:.5rem;
+      background:#FFF8EC;border:1.5px solid #F5DFA0;
+      border-radius:var(--r-md);padding:.75rem 1rem;
+      font-size:.82rem;font-weight:700;color:#7A5800;
+      margin-bottom:.85rem;
+    }
+    .demo-option{
+      display:flex;align-items:center;gap:.75rem;
+      padding:.85rem 1rem;border-radius:var(--r-md);
+      cursor:pointer;background:var(--surface-2);
+      border:1.5px solid var(--border);margin-bottom:.5rem;
+      transition:all .15s var(--ease);font-weight:700;font-size:.92rem;
+    }
+    .demo-option:hover{ border-color:var(--primary);background:#EEF4FF;color:var(--primary-dk); }
+    .demo-option-icon{
+      width:34px;height:34px;border-radius:10px;
+      background:#EEF4FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .demo-option-sub{ font-size:.72rem;font-weight:600;color:var(--text-2); }
 
     /* make route fields look tappable / read-only */
     .route-input.modal-trigger{
@@ -826,9 +908,9 @@
       background:rgba(123,179,240,.06);
       box-shadow:none;border:none;outline:none;
     }
-    .route-field:has(.route-input.modal-trigger):hover{background:rgba(123,179,240,.04);}
+    .route-field:has(.route-input.modal-trigger):hover{ background:rgba(123,179,240,.04); }
 
-    /* ── LOCATION AUTOCOMPLETE ───────────────────────── */
+    /* â”€â”€ LOCATION AUTOCOMPLETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .route-field-wrap{position:relative;}
     .ac-dropdown{
       position:absolute;left:0;right:0;top:calc(100% + 4px);
@@ -865,12 +947,12 @@
       animation:spin .6s linear infinite;flex-shrink:0;
     }
 
-    /* ══════════════════════════════════════════════════
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        MOBILE-FIRST RESPONSIVE  (max-width: 600px)
-    ══════════════════════════════════════════════════ */
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
     @media(max-width:600px){
 
-      /* ── Header ── */
+      /* â”€â”€ Header â”€â”€ */
       .site-header{
         padding:0 .9rem;height:56px;
       }
@@ -882,23 +964,23 @@
       #live-clock{display:none;}
       .api-status-chip, #api-status-chip{font-size:.72rem;padding:.3rem .65rem;}
 
-      /* nav tabs — icon only, bigger tap targets */
+      /* nav tabs â€” icon only, bigger tap targets */
       .nav-tabs{gap:.15rem;padding:.2rem;}
       .nav-tab{padding:.5rem .75rem;font-size:.78rem;}
       .nav-tab .tab-label{display:none;}
 
-      /* ── Main grid ── */
+      /* â”€â”€ Main grid â”€â”€ */
       .main-grid{
         padding:.85rem .9rem 6rem; /* bottom padding for floating button */
         gap:1rem;
         grid-template-columns:1fr;
       }
 
-      /* ── Input card ── */
+      /* â”€â”€ Input card â”€â”€ */
       .card{padding:1.1rem;}
       .card-head{font-size:.9rem;margin-bottom:1.1rem;}
 
-      /* budget label row — wrap budget tier badge below */
+      /* budget label row â€” wrap budget tier badge below */
       .form-label{flex-wrap:wrap;row-gap:.3rem;}
       .budget-tier{margin-left:0;margin-top:.1rem;}
 
@@ -909,12 +991,12 @@
       /* slider thumb bigger for touch */
       .range-slider::-webkit-slider-thumb{width:24px;height:24px;}
 
-      /* energy cards — full width row on mobile */
+      /* energy cards â€” full width row on mobile */
       .energy-grid{grid-template-columns:repeat(3,1fr);gap:.5rem;}
       .energy-label{padding:.75rem .3rem;font-size:.75rem;}
       .energy-emoji{font-size:1.25rem;}
 
-      /* ── Floating CTA button ── */
+      /* â”€â”€ Floating CTA button â”€â”€ */
       .btn-primary#evalBtn{
         position:fixed;bottom:0;left:0;right:0;
         border-radius:0;margin-top:0;
@@ -930,20 +1012,20 @@
         content:'';display:block;height:5rem;
       }
 
-      /* ── Waiting card ── */
+      /* â”€â”€ Waiting card â”€â”€ */
       .waiting-card{padding:2.5rem 1.25rem;}
       .waiting-illo{width:80px;height:auto;}
       .waiting-title{font-size:1rem;}
       .waiting-sub{font-size:.85rem;}
 
-      /* ── Result card ── */
+      /* â”€â”€ Result card â”€â”€ */
       .rc-header{padding:.9rem 1.1rem;}
       .rc-body{padding:1.1rem;}
       .rc-action{font-size:1.15rem;}
       .rc-justify{font-size:.88rem;}
       .tip-text{font-size:.85rem;}
 
-      /* dashboard tiles — 2 cols still works, shrink padding */
+      /* dashboard tiles â€” 2 cols still works, shrink padding */
       .rc-dash{padding:0 1.1rem 1.1rem;gap:.65rem;}
       .dash-item{padding:.75rem .8rem;}
       .dash-val{font-size:.9rem;}
@@ -952,7 +1034,7 @@
       /* route strip in result */
       .rc-route{font-size:.75rem;padding:.25rem .7rem .25rem .5rem;}
 
-      /* ── About / Settings pages ── */
+      /* â”€â”€ About / Settings pages â”€â”€ */
       .about-wrap,.settings-wrap{padding:1.5rem .9rem 5rem;}
       .about-hero{padding:1.75rem 1.1rem;}
       .about-hero h1{font-size:1.4rem;}
@@ -962,14 +1044,14 @@
       .steps li{font-size:.78rem;}
       .api-link{font-size:.78rem;padding:.4rem .75rem;}
 
-      /* matrix table — stack on mobile (already handled but improve) */
+      /* matrix table â€” stack on mobile (already handled but improve) */
       .matrix-table{font-size:.78rem;}
 
       /* persist note */
       .persist-note{font-size:.78rem;padding:.7rem .85rem;}
     }
 
-    /* mid-range tablets (601–900px) */
+    /* mid-range tablets (601â€“900px) */
     @media(min-width:601px) and (max-width:900px){
       .main-grid{padding:1.5rem 1.25rem 3rem;gap:1.25rem;}
       .card{padding:1.5rem;}
@@ -979,7 +1061,7 @@
 </head>
 <body>
 
-<!-- ══════════════ HEADER ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• HEADER â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <header class="site-header">
   <a class="brand" href="#">
     <div class="brand-icon" aria-hidden="true">
@@ -1029,7 +1111,7 @@
   </div>
 </header>
 
-<!-- ══════════════ HOME PAGE ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• HOME PAGE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="page active" id="page-home" role="tabpanel">
   <div class="main-grid">
 
@@ -1045,7 +1127,7 @@
 
       <form id="evalForm" onsubmit="return false;">
 
-        <!-- Route: From / To — maps nav style -->
+        <!-- Route: From / To â€” maps nav style -->
         <div class="form-group">
           <label class="form-label">
             <span class="lbl-icon" style="background:#EEF4FF;">
@@ -1066,7 +1148,7 @@
                 <div class="route-field-wrap">
                   <input class="route-input modal-trigger" type="text" id="fromInput"
                     value="" placeholder="Starting point" autocomplete="off" readonly
-                    onclick="openMapModal('from')" aria-label="Select starting point — opens map">
+                    onclick="openMapModal('from')" aria-label="Select starting point â€” opens map">
                   <div class="ac-dropdown" id="acFrom"></div>
                 </div>
               </div>
@@ -1082,7 +1164,7 @@
                 <div class="route-field-wrap">
                   <input class="route-input modal-trigger" type="text" id="toInput"
                     value="" placeholder="Where are you going?" autocomplete="off" readonly
-                    onclick="openMapModal('to')" aria-label="Select destination — opens map">
+                    onclick="openMapModal('to')" aria-label="Select destination â€” opens map">
                   <div class="ac-dropdown" id="acTo"></div>
                 </div>
               </div>
@@ -1106,7 +1188,7 @@
             <span class="budget-tier tier-norm" id="budgetTier">Normal</span>
           </label>
           <div class="budget-row">
-            <span class="peso-badge">₱</span>
+            <span class="peso-badge">â‚±</span>
             <input class="text-input" type="number" id="budgetInput" value="150" min="0" max="1000" step="5" aria-label="Budget in pesos">
           </div>
           <input class="range-slider" type="range" id="budgetSlider" value="150" min="0" max="500" step="5" aria-label="Budget slider">
@@ -1124,19 +1206,19 @@
             <div class="energy-option">
               <input type="radio" name="energy" id="eExhausted" value="EXHAUSTED">
               <label class="energy-label" for="eExhausted">
-                <span class="energy-emoji">😩</span>Exhausted
+                <span class="energy-emoji">ðŸ˜©</span>Exhausted
               </label>
             </div>
             <div class="energy-option">
               <input type="radio" name="energy" id="eNormal" value="NORMAL" checked>
               <label class="energy-label" for="eNormal">
-                <span class="energy-emoji">😌</span>Normal
+                <span class="energy-emoji">ðŸ˜Œ</span>Normal
               </label>
             </div>
             <div class="energy-option">
               <input type="radio" name="energy" id="eEnergized" value="ENERGIZED">
               <label class="energy-label" for="eEnergized">
-                <span class="energy-emoji">⚡</span>Energized
+                <span class="energy-emoji">âš¡</span>Energized
               </label>
             </div>
           </div>
@@ -1181,7 +1263,7 @@
       <div class="result-card" id="resultCard" role="region" aria-live="polite">
         <div class="rc-header">
           <span class="rc-badge">
-            <span id="rcIcon">📻</span>
+            <span id="rcIcon">ðŸ“»</span>
             <span id="rcTitle">Commute Broadcast</span>
           </span>
           <span class="rc-time" id="rcTime"></span>
@@ -1208,7 +1290,7 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><path d="M17.5 19H9a7 7 0 117-7h3.5"/><polyline points="17.5 19 21 16 17.5 13 21 10 17.5 7"/></svg>
               Weather
             </div>
-            <div class="dash-val" id="dashWeather">—</div>
+            <div class="dash-val" id="dashWeather">â€”</div>
             <div class="dash-sub" id="dashWeatherSub"></div>
           </div>
           <div class="dash-item">
@@ -1216,7 +1298,7 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><line x1="13" y1="16" x2="17" y2="16"/></svg>
               Traffic
             </div>
-            <div class="dash-val" id="dashTraffic">—</div>
+            <div class="dash-val" id="dashTraffic">â€”</div>
             <div class="dash-sub" id="dashTrafficSub"></div>
             <div class="speed-bar" id="speedBar" style="display:none"><div class="speed-fill" id="speedFill"></div></div>
           </div>
@@ -1225,7 +1307,7 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
               Budget
             </div>
-            <div class="dash-val" id="dashBudget">—</div>
+            <div class="dash-val" id="dashBudget">â€”</div>
             <div class="dash-sub" id="dashBudgetSub"></div>
           </div>
           <div class="dash-item">
@@ -1233,7 +1315,7 @@
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-1px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               Distance
             </div>
-            <div class="dash-val" id="dashDist">—</div>
+            <div class="dash-val" id="dashDist">â€”</div>
             <div class="dash-sub" id="dashDistSub"></div>
           </div>
         </div>
@@ -1243,7 +1325,7 @@
   </div>
 </div><!-- /home page -->
 
-<!-- ══════════════ SETTINGS PAGE ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• SETTINGS PAGE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="page" id="page-settings" role="tabpanel">
   <div class="settings-wrap">
     <h1>
@@ -1254,23 +1336,23 @@
     <!-- persist note -->
     <div class="persist-note">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Built-in API keys are already active — the app works out of the box with no setup needed. These fields let you override with your own keys if you want higher rate limits.
+      Built-in API keys are already active â€” the app works out of the box with no setup needed. These fields let you override with your own keys if you want higher rate limits.
     </div>
 
     <!-- OpenWeatherMap Card -->
     <div class="settings-card">
       <div class="settings-card-head">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.4rem"><path d="M17.5 19H9a7 7 0 117-7h3.5"/><polyline points="17.5 19 21 16 17.5 13 21 10 17.5 7"/></svg>
-        OpenWeatherMap — Weather API
-        <span id="wSavedBadge" class="key-saved-badge" style="display:none">✓ Saved</span>
+        OpenWeatherMap â€” Weather API
+        <span id="wSavedBadge" class="key-saved-badge" style="display:none">âœ“ Saved</span>
       </div>
       <div class="settings-card-body">
         <!-- activation warning banner (shown on 401) -->
         <div id="wKeyBanner" class="alert-banner warn" style="display:none">
-          <span class="alert-banner-icon">⏳</span>
+          <span class="alert-banner-icon">â³</span>
           <div>
-            <strong>Key not active yet.</strong> New OpenWeatherMap keys take <strong>10–120 minutes</strong> to activate after signup — this is normal. Come back in a bit and try again. If it's been over 2 hours, double-check you copied the full key with no extra spaces.
-            <br><a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener">→ Check your API keys page</a>
+            <strong>Key not active yet.</strong> New OpenWeatherMap keys take <strong>10â€“120 minutes</strong> to activate after signup â€” this is normal. Come back in a bit and try again. If it's been over 2 hours, double-check you copied the full key with no extra spaces.
+            <br><a href="https://home.openweathermap.org/api_keys" target="_blank" rel="noopener">â†’ Check your API keys page</a>
           </div>
         </div>
         <!-- Direct link to signup -->
@@ -1280,14 +1362,14 @@
         </a>
         <ul class="steps">
           <li><span class="step-num">1</span>Sign up for a free account at the link above</li>
-          <li><span class="step-num">2</span>Go to your profile → <strong>API keys</strong> tab</li>
+          <li><span class="step-num">2</span>Go to your profile â†’ <strong>API keys</strong> tab</li>
           <li><span class="step-num">3</span>Copy the <em>Default</em> key (or generate a new one)</li>
           <li><span class="step-num">4</span>Paste it below and hit Save</li>
         </ul>
         <div class="key-row">
           <label for="wKeyInput">Your API Key (appid)</label>
           <div class="key-input-row">
-            <input class="key-input" type="password" id="wKeyInput" placeholder="e.g. a1b2c3d4e5f6…">
+            <input class="key-input" type="password" id="wKeyInput" placeholder="e.g. a1b2c3d4e5f6â€¦">
             <button class="btn-icon" type="button" onclick="toggleKeyVis('wKeyInput', this)" title="Show/hide key" aria-label="Toggle key visibility">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -1300,28 +1382,28 @@
     <div class="settings-card">
       <div class="settings-card-head">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#90DFC6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.4rem"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>
-        TomTom — Traffic Flow API
-        <span id="tSavedBadge" class="key-saved-badge" style="display:none">✓ Saved</span>
+        TomTom â€” Traffic Flow API
+        <span id="tSavedBadge" class="key-saved-badge" style="display:none">âœ“ Saved</span>
       </div>
       <div class="settings-card-body">
         <div class="traffic-state-box ok" style="margin-bottom:.75rem;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Built-in key active — traffic data ready.
+          Built-in key active â€” traffic data ready.
         </div>
         <a class="api-link" href="https://developer.tomtom.com/user/register" target="_blank" rel="noopener">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Register free at developer.tomtom.com
         </a>
         <ul class="steps">
-          <li><span class="step-num">1</span>Click the link above — register with just an email, no card asked</li>
-          <li><span class="step-num">2</span>After signing in, go to <strong>Dashboard → My Apps</strong></li>
-          <li><span class="step-num">3</span>Click <strong>New App</strong> → check <em>Traffic</em> → create</li>
+          <li><span class="step-num">1</span>Click the link above â€” register with just an email, no card asked</li>
+          <li><span class="step-num">2</span>After signing in, go to <strong>Dashboard â†’ My Apps</strong></li>
+          <li><span class="step-num">3</span>Click <strong>New App</strong> â†’ check <em>Traffic</em> â†’ create</li>
           <li><span class="step-num">4</span>Copy the API key shown, paste it below, and hit Save</li>
         </ul>
         <div class="key-row">
           <label for="tKeyInput">Your TomTom API Key</label>
           <div class="key-input-row">
-            <input class="key-input" type="password" id="tKeyInput" placeholder="e.g. a1b2c3d4e5f6…">
+            <input class="key-input" type="password" id="tKeyInput" placeholder="e.g. a1b2c3d4e5f6â€¦">
             <button class="btn-icon" type="button" onclick="toggleKeyVis('tKeyInput', this)" title="Show/hide key" aria-label="Toggle key visibility">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -1329,7 +1411,7 @@
         </div>
         <div class="traffic-state-box warn" style="margin-top:.75rem;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          No key? The app estimates traffic from live weather — rain = likely congestion. Less precise but still useful.
+          No key? The app estimates traffic from live weather â€” rain = likely congestion. Less precise but still useful.
         </div>
       </div>
     </div>
@@ -1349,14 +1431,14 @@
         </div>
         <div class="status-row">
           <span class="status-row-label"><span class="status-dot" id="dotTraffic"></span>Traffic API</span>
-          <span id="statusTrafficText" style="font-size:.8rem;font-weight:700;color:var(--text-2)">Not configured — using weather fallback</span>
+          <span id="statusTrafficText" style="font-size:.8rem;font-weight:700;color:var(--text-2)">Not configured â€” using weather fallback</span>
         </div>
       </div>
     </div>
   </div>
 </div><!-- /settings -->
 
-<!-- ══════════════ ABOUT PAGE ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• ABOUT PAGE â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="page" id="page-about" role="tabpanel">
   <div class="about-wrap">
 
@@ -1373,7 +1455,7 @@
         <path d="M10 32h44" stroke="#7BB3F0" stroke-width="1.5" stroke-dasharray="3 3"/>
       </svg>
       <h1>Biyahe News</h1>
-      <p>A smart commute planner built for Filipino students who need to get home on a tight budget, in unpredictable weather, and through heavy traffic — every single day.</p>
+      <p>A smart commute planner built for Filipino students who need to get home on a tight budget, in unpredictable weather, and through heavy traffic â€” every single day.</p>
     </div>
 
     <!-- What it does -->
@@ -1383,8 +1465,8 @@
         What this app does
       </h2>
       <div class="about-prose">
-        <p>Most commuter apps just tell you how long a route takes. Biyahe News is different — it tells you <em>what you should actually do right now</em>, given your specific situation.</p>
-        <p>It takes four real factors about your day — your remaining budget, your physical energy level, current weather at your location, and live road congestion — and cross-references them against a decision matrix to produce a single, clear action plan. Not just a route. An actual recommendation: leave now, wait it out, walk around the jam, or spend a little more to get home safe.</p>
+        <p>Most commuter apps just tell you how long a route takes. Biyahe News is different â€” it tells you <em>what you should actually do right now</em>, given your specific situation.</p>
+        <p>It takes four real factors about your day â€” your remaining budget, your physical energy level, current weather at your location, and live road congestion â€” and cross-references them against a decision matrix to produce a single, clear action plan. Not just a route. An actual recommendation: leave now, wait it out, walk around the jam, or spend a little more to get home safe.</p>
         <p>The goal is to help you avoid the two most expensive mistakes a commuter student makes: paying surge prices when you're already broke, and pushing through bad conditions when your body can't handle it.</p>
       </div>
     </div>
@@ -1393,36 +1475,36 @@
     <div class="about-section">
       <h2>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C3B5F5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        The four inputs — and why they matter
+        The four inputs â€” and why they matter
       </h2>
       <div class="about-cards">
         <div class="about-detail-card">
           <div class="adc-head">
-            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">₱</span>
+            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">â‚±</span>
             <span>Remaining Budget</span>
           </div>
-          <p>Split into three tiers: <strong>Low</strong> (under ₱100), <strong>Normal</strong> (₱100–₱250), and <strong>High</strong> (above ₱250). Budget directly controls whether you can absorb the cost of a ride-hailing app, a direct taxi, or whether you're limited to jeepney fare only. A low budget under bad conditions is the highest-risk scenario — it removes your financial safety net at exactly the moment you might need it most.</p>
+          <p>Split into three tiers: <strong>Low</strong> (under â‚±100), <strong>Normal</strong> (â‚±100â€“â‚±250), and <strong>High</strong> (above â‚±250). Budget directly controls whether you can absorb the cost of a ride-hailing app, a direct taxi, or whether you're limited to jeepney fare only. A low budget under bad conditions is the highest-risk scenario â€” it removes your financial safety net at exactly the moment you might need it most.</p>
         </div>
         <div class="about-detail-card">
           <div class="adc-head">
-            <span class="adc-num" style="background:#F5EFFE;color:#9B87E0;">⚡</span>
+            <span class="adc-num" style="background:#F5EFFE;color:#9B87E0;">âš¡</span>
             <span>Energy Level</span>
           </div>
-          <p>Exhausted, Normal, or Energized. This input exists because physical fatigue changes your risk profile. An exhausted commuter standing in the rain for 45 minutes is at real risk of getting sick or having an accident. Someone energized can walk an extra 15 minutes to bypass a traffic jam without consequence. The app treats exhaustion as a risk multiplier — it makes every other bad condition worse.</p>
+          <p>Exhausted, Normal, or Energized. This input exists because physical fatigue changes your risk profile. An exhausted commuter standing in the rain for 45 minutes is at real risk of getting sick or having an accident. Someone energized can walk an extra 15 minutes to bypass a traffic jam without consequence. The app treats exhaustion as a risk multiplier â€” it makes every other bad condition worse.</p>
         </div>
         <div class="about-detail-card">
           <div class="adc-head">
-            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">🌦</span>
+            <span class="adc-num" style="background:#EEF4FF;color:#5A96DB;">ðŸŒ¦</span>
             <span>Live Weather</span>
           </div>
-          <p>Fetched in real time from <strong>OpenWeatherMap</strong> using your origin city. The system classifies the sky as <strong>Clear</strong> or <strong>Rainy</strong> — where Rainy covers rain, drizzle, and thunderstorms. Rain matters because it does three things at once: it makes walking miserable and dangerous, it causes traffic to slow significantly on Philippine roads due to flooding and poor visibility, and it drives ride-hailing surge prices up sharply.</p>
+          <p>Fetched in real time from <strong>OpenWeatherMap</strong> using your origin city. The system classifies the sky as <strong>Clear</strong> or <strong>Rainy</strong> â€” where Rainy covers rain, drizzle, and thunderstorms. Rain matters because it does three things at once: it makes walking miserable and dangerous, it causes traffic to slow significantly on Philippine roads due to flooding and poor visibility, and it drives ride-hailing surge prices up sharply.</p>
         </div>
         <div class="about-detail-card">
           <div class="adc-head">
-            <span class="adc-num" style="background:#E6F7F0;color:#1E7A55;">🚦</span>
+            <span class="adc-num" style="background:#E6F7F0;color:#1E7A55;">ðŸš¦</span>
             <span>Traffic Congestion</span>
           </div>
-          <p>Fetched from <strong>TomTom Traffic Flow API</strong> using the coordinates of your origin city. The system measures the ratio of current road speed to the normal free-flow speed for that area. If traffic is moving at less than 75% of the usual speed, it's classified as <strong>High Congestion</strong>. If no traffic key is configured, the app falls back to estimating congestion from weather — since rain reliably causes significant slowdowns on Philippine roads, it's treated as a congestion proxy.</p>
+          <p>Fetched from <strong>TomTom Traffic Flow API</strong> using the coordinates of your origin city. The system measures the ratio of current road speed to the normal free-flow speed for that area. If traffic is moving at less than 75% of the usual speed, it's classified as <strong>High Congestion</strong>. If no traffic key is configured, the app falls back to estimating congestion from weather â€” since rain reliably causes significant slowdowns on Philippine roads, it's treated as a congestion proxy.</p>
         </div>
       </div>
     </div>
@@ -1441,7 +1523,7 @@
           <span>Condition</span><span>Budget</span><span>Energy</span><span>Weather</span><span>Traffic</span><span>Result</span>
         </div>
         <div class="matrix-row stay">
-          <span class="mc-label">🛑 Stay in Campus</span>
+          <span class="mc-label">ðŸ›‘ Stay in Campus</span>
           <span><strong>Low</strong></span>
           <span>Exhausted</span>
           <span>Rain <em>or</em></span>
@@ -1449,7 +1531,7 @@
           <span>Wait it out. Commuting now means expensive surges or getting stuck in gridlock while physically depleted.</span>
         </div>
         <div class="matrix-row active">
-          <span class="mc-label">🚶 Active Bypass</span>
+          <span class="mc-label">ðŸš¶ Active Bypass</span>
           <span><strong>Low</strong></span>
           <span>Energized</span>
           <span>Clear</span>
@@ -1457,20 +1539,20 @@
           <span>Walk past the bottleneck. Traffic is jammed but you have the energy and conditions to bypass it on foot.</span>
         </div>
         <div class="matrix-row welfare">
-          <span class="mc-label">🛵 Priority Transit</span>
+          <span class="mc-label">ðŸ›µ Priority Transit</span>
           <span>Normal / High</span>
           <span>Exhausted</span>
           <span>Rainy</span>
           <span>Any</span>
-          <span>Spend a bit more. You have the budget buffer — fatigue plus rain is a real safety risk, not worth saving ₱50.</span>
+          <span>Spend a bit more. You have the budget buffer â€” fatigue plus rain is a real safety risk, not worth saving â‚±50.</span>
         </div>
         <div class="matrix-row optimal">
-          <span class="mc-label">🚌 Green Light</span>
+          <span class="mc-label">ðŸšŒ Green Light</span>
           <span>Any</span>
           <span>Normal / Energized</span>
           <span>Clear</span>
           <span>Low</span>
-          <span>Take your standard route now. All conditions are stable — this is the ideal window to commute.</span>
+          <span>Take your standard route now. All conditions are stable â€” this is the ideal window to commute.</span>
         </div>
       </div>
     </div>
@@ -1484,7 +1566,7 @@
       <div class="api-badge-row">
         <a class="api-pill" href="https://openweathermap.org/api/one-call-3" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 117-7h3.5"/></svg>
-          OpenWeatherMap — Current Weather v2.5
+          OpenWeatherMap â€” Current Weather v2.5
         </a>
         <a class="api-pill" href="https://developer.tomtom.com/traffic-api/documentation/tomtom-maps/v1/traffic-flow/flow-segment-data" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#90DFC6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>
@@ -1496,105 +1578,152 @@
   </div>
 </div><!-- /about -->
 
-<!-- ══════════════ MAP MODAL OVERLAY ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAP MODAL OVERLAY â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div class="map-modal-overlay" id="mapModalOverlay" aria-modal="true" role="dialog" aria-label="Select location on map">
   <div class="map-modal" id="mapModalBox">
-    <div class="modal-handle" aria-hidden="true"></div>
 
-    <!-- Top bar -->
-    <div class="modal-topbar">
-      <button class="modal-back" type="button" onclick="closeMapModal()" aria-label="Close map">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <span class="modal-title" id="mapModalTitle">Pick a location</span>
-    </div>
-
-    <!-- Search bar -->
-    <div class="modal-search-wrap">
-      <span class="modal-search-icon" aria-hidden="true">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </span>
-      <input class="modal-search-input" type="text" id="mapSearchInput"
-        placeholder="Search for a place…" autocomplete="off"
-        aria-label="Search location" aria-autocomplete="list"
-        aria-controls="mapSuggestions">
-      <div class="modal-suggestions" id="mapSuggestions" role="listbox"></div>
-    </div>
-
-    <!-- Live TomTom map -->
+    <!-- Full-screen map tiles -->
     <div class="modal-map-area" id="mapLiveArea">
       <div id="mapFromEl" style="display:none;width:100%;height:100%;"></div>
       <div id="mapToEl"   style="display:none;width:100%;height:100%;"></div>
-      <!-- Center crosshair pin for drag-to-refine -->
-      <div class="map-center-pin" id="mapCenterPin" aria-hidden="true">
-        <svg width="40" height="48" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="pinShadow" x="-40%" y="-20%" width="180%" height="160%">
-              <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(91,150,220,0.4)"/>
-            </filter>
-          </defs>
-          <path d="M20 2C11.16 2 4 9.16 4 18C4 29.5 20 46 20 46C20 46 36 29.5 36 18C36 9.16 28.84 2 20 2Z" fill="#7BB3F0" filter="url(#pinShadow)"/>
-          <circle cx="20" cy="18" r="6" fill="white"/>
-        </svg>
+    </div>
+
+    <!-- Drop-pin shadow (sits on map, animates with pin) -->
+    <div class="pin-shadow-wrap" id="pinShadow" aria-hidden="true">
+      <svg width="28" height="10" viewBox="0 0 28 10"><ellipse cx="14" cy="5" rx="12" ry="4" fill="rgba(0,0,0,.22)"/></svg>
+    </div>
+
+    <!-- Animated center drop-pin -->
+    <div class="map-center-pin" id="mapCenterPin" aria-hidden="true">
+      <svg width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="pinGrad" cx="38%" cy="30%" r="65%">
+            <stop offset="0%" stop-color="#9DCFF8"/>
+            <stop offset="100%" stop-color="#5A96DB"/>
+          </radialGradient>
+        </defs>
+        <!-- shaft -->
+        <path d="M22 54 C22 54 22 38 22 38" stroke="#5A96DB" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- teardrop body -->
+        <path d="M22 3C13.16 3 6 10.16 6 19C6 30.5 22 38 22 38C22 38 38 30.5 38 19C38 10.16 30.84 3 22 3Z"
+              fill="url(#pinGrad)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+        <!-- inner circle -->
+        <circle cx="22" cy="19" r="7" fill="white" fill-opacity=".9"/>
+        <!-- dot -->
+        <circle cx="22" cy="19" r="3" fill="#5A96DB"/>
+      </svg>
+    </div>
+
+    <!-- Floating top bar: back button + search pill -->
+    <div class="modal-float-top">
+      <button class="modal-back" type="button" onclick="closeMapModal()" aria-label="Close">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="modal-search-pill" id="mapSearchPill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="modal-search-input" type="text" id="mapSearchInput"
+          placeholder="Search for a placeâ€¦" autocomplete="off"
+          aria-label="Search location" aria-autocomplete="list"
+          aria-controls="mapSuggestions">
+        <button class="modal-search-clear" id="mapSearchClear" type="button" aria-label="Clear search" tabindex="-1">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <!-- Suggestions anchored to this pill -->
+        <div class="modal-suggestions" id="mapSuggestions" role="listbox"></div>
       </div>
     </div>
 
-    <!-- Demo fallback list (shown when map fails) -->
-    <div class="demo-list-wrap" id="demoListArea" style="display:none;">
-      <div class="demo-notice">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        ✨ Demo Preview Active — map unavailable
+    <!-- Floating right controls -->
+    <div class="modal-float-right" id="mapFloatRight">
+      <!-- My location -->
+      <button class="map-ctrl-btn" type="button" onclick="_goToMyLocation()" title="My location" aria-label="Go to my location">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3"/></svg>
+      </button>
+      <!-- Zoom group -->
+      <div class="zoom-group">
+        <button class="map-ctrl-btn" type="button" onclick="_mapZoom(1)" title="Zoom in" aria-label="Zoom in">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="map-ctrl-btn" type="button" onclick="_mapZoom(-1)" title="Zoom out" aria-label="Zoom out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
       </div>
-      <div id="demoOptionsList"></div>
     </div>
 
-    <!-- Confirm button -->
-    <div class="modal-confirm-bar">
+    <!-- Bottom location card (address + confirm) -->
+    <div class="modal-bottom-card" id="mapBottomCard">
+      <div class="bottom-card-handle"></div>
+      <div class="loc-card-row">
+        <div class="loc-card-icon" id="locCardIcon">
+          <!-- icon swapped by JS -->
+        </div>
+        <div class="loc-card-text">
+          <div class="loc-card-label" id="locCardLabel">Drag map to pick location</div>
+          <div class="loc-card-name" id="locCardName">
+            <span class="loc-resolving" id="locResolving">
+              <span class="loc-resolving-spin"></span>Detecting locationâ€¦
+            </span>
+          </div>
+          <div class="loc-card-detail" id="locCardDetail"></div>
+        </div>
+      </div>
       <button class="btn-confirm-loc" type="button" id="confirmLocBtn" onclick="confirmLocation()" disabled>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Confirm Location ✨
+        Confirm Location âœ¨
       </button>
     </div>
+
+    <!-- Demo fallback (shown when map fails to load) -->
+    <div class="demo-list-wrap" id="demoListArea" style="display:none;">
+      <div style="padding-top:.5rem">
+        <div class="demo-notice">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          âœ¨ Demo Preview â€” map unavailable
+        </div>
+        <div id="demoOptionsList"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- ══════════════ TOASTS ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOASTS â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="toasts" aria-live="polite"></div>
 
-<!-- ══════════════ FOOTER ══════════════ -->
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• FOOTER â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <footer class="site-footer">
-  Biyahe News ✦ Smart Commuter Assistant &nbsp;·&nbsp; <span id="footer-time"></span>
+  Biyahe News âœ¦ Smart Commuter Assistant &nbsp;Â·&nbsp; <span id="footer-time"></span>
 </footer>
 
 <script src="config.js"></script>
 <script>
-  /* ── CONFIG ────────────────────────────────────── */
-  // Keys are Base64-obfuscated — deters casual scraping & automated key scanners.
+  /* â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  // Keys are Base64-obfuscated â€” deters casual scraping & automated key scanners.
   // Note: client-side obfuscation is not encryption; accepted tradeoff for a demo app.
   const _WK = atob('ZTE2NWRmMGIxODIwODgwMmJmYjZiYzY3ZDRiYTg4ODQ=');
   const _TK = atob('dmJIRjJ4cUJGYnFNNDhDbEwzdzZxaTdMdXdxZHhZbEo=');
   const CFG = {
     weatherKey: (window.APP_KEYS || {}).weatherKey || _WK,
     trafficKey:  (window.APP_KEYS || {}).trafficKey  || _TK,
-    defaultCity: 'Biñan',
+    defaultCity: 'BiÃ±an',
     defaultCoords: { lat: 14.3122, lon: 121.0914 }
   };
 
-  /* ── STATE ─────────────────────────────────────── */
+  /* â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   const S = {
     budget: 150,
     energy: 'NORMAL',
     location: '',
     from: '',
     to: '',
-    fromCoords: null,  // { lat, lon } — set by map modal, used for weather + distance
-    toCoords:   null,  // { lat, lon } — set by map modal, used for distance
+    fromCoords: null,  // { lat, lon } â€” set by map modal, used for weather + distance
+    toCoords:   null,  // { lat, lon } â€” set by map modal, used for distance
     loading: false,
     lastWeather: null,
     lastTraffic: null
   };
 
-  /* ── INIT ──────────────────────────────────────── */
+  /* â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   document.addEventListener('DOMContentLoaded', () => {
     startClock();
     loadKeys();
@@ -1604,7 +1733,7 @@
     initAutocomplete();
   });
 
-  /* ── NAV ───────────────────────────────────────── */
+  /* â”€â”€ NAV â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function initNav() {
     document.querySelectorAll('.nav-tab').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1621,7 +1750,7 @@
     });
   }
 
-  /* ── CLOCK ─────────────────────────────────────── */
+  /* â”€â”€ CLOCK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function startClock() {
     function tick() {
       const now = new Date();
@@ -1634,7 +1763,7 @@
     setInterval(tick, 1000);
   }
 
-  /* ── BUDGET SYNC ───────────────────────────────── */
+  /* â”€â”€ BUDGET SYNC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function syncBudgetControls() {
     const inp = document.getElementById('budgetInput');
     const sld = document.getElementById('budgetSlider');
@@ -1654,12 +1783,12 @@
 
   function updateBudgetTier(v) {
     const el = document.getElementById('budgetTier');
-    if (v < 100) { el.className = 'budget-tier tier-low'; el.textContent = 'Low (<₱100)'; }
+    if (v < 100) { el.className = 'budget-tier tier-low'; el.textContent = 'Low (<â‚±100)'; }
     else if (v <= 250) { el.className = 'budget-tier tier-norm'; el.textContent = 'Normal'; }
-    else { el.className = 'budget-tier tier-high'; el.textContent = 'High (>₱250)'; }
+    else { el.className = 'budget-tier tier-high'; el.textContent = 'High (>â‚±250)'; }
   }
 
-  /* ── KEY MANAGEMENT ────────────────────────────── */
+  /* â”€â”€ KEY MANAGEMENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function loadKeys() {
     // localStorage overrides built-in keys only if the user explicitly saved their own
     const w = localStorage.getItem('bn_wkey') || CFG.weatherKey;
@@ -1674,11 +1803,11 @@
     const userT = localStorage.getItem('bn_tkey');
     if (wInp) {
       if (userW) { wInp.value = userW; }
-      else { wInp.value = ''; wInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+      else { wInp.value = ''; wInp.placeholder = 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢  (built-in key active)'; }
     }
     if (tInp) {
       if (userT) { tInp.value = userT; }
-      else { tInp.value = ''; tInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+      else { tInp.value = ''; tInp.placeholder = 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢  (built-in key active)'; }
     }
     refreshStatusDots();
   }
@@ -1691,10 +1820,10 @@
     // If the field is blank, remove the override so the built-in key is used
     if (w) { localStorage.setItem('bn_wkey', w); CFG.weatherKey = w; }
     else   { localStorage.removeItem('bn_wkey');  CFG.weatherKey = _WK;
-             wInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+             wInp.placeholder = 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢  (built-in key active)'; }
     if (t) { localStorage.setItem('bn_tkey', t); CFG.trafficKey = t; }
     else   { localStorage.removeItem('bn_tkey');  CFG.trafficKey = _TK;
-             tInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+             tInp.placeholder = 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢  (built-in key active)'; }
     refreshStatusDots();
     toast('Keys saved!', 'ok');
   }
@@ -1718,10 +1847,10 @@
     // Distinguish between built-in key and user-supplied key in status text
     const userW = !!localStorage.getItem('bn_wkey');
     const userT = !!localStorage.getItem('bn_tkey');
-    if (sw) sw.textContent = hasW ? (userW ? 'Custom key active ✓' : 'Built-in key active ✓') : 'Not configured';
-    if (st) st.textContent = hasT ? (userT ? 'Custom key active ✓' : 'Built-in key active ✓') : 'Not configured — using weather fallback';
-    if (wBadge) { wBadge.style.display = hasW ? 'inline-flex' : 'none'; wBadge.textContent = userW ? '✓ Saved' : '✓ Built-in'; }
-    if (tBadge) { tBadge.style.display = hasT ? 'inline-flex' : 'none'; tBadge.textContent = userT ? '✓ Saved' : '✓ Built-in'; }
+    if (sw) sw.textContent = hasW ? (userW ? 'Custom key active âœ“' : 'Built-in key active âœ“') : 'Not configured';
+    if (st) st.textContent = hasT ? (userT ? 'Custom key active âœ“' : 'Built-in key active âœ“') : 'Not configured â€” using weather fallback';
+    if (wBadge) { wBadge.style.display = hasW ? 'inline-flex' : 'none'; wBadge.textContent = userW ? 'âœ“ Saved' : 'âœ“ Built-in'; }
+    if (tBadge) { tBadge.style.display = hasT ? 'inline-flex' : 'none'; tBadge.textContent = userT ? 'âœ“ Saved' : 'âœ“ Built-in'; }
 
     if (chip) {
       if (hasW && hasT) {
@@ -1729,7 +1858,7 @@
         chipTxt.textContent = 'Live APIs';
       } else if (hasW && !hasT) {
         chip.className = 'chip live';
-        chipTxt.textContent = 'Weather live · Traffic estimated';
+        chipTxt.textContent = 'Weather live Â· Traffic estimated';
       } else {
         chip.className = 'chip error';
         chipTxt.textContent = 'No Weather key';
@@ -1737,7 +1866,7 @@
     }
   }
 
-  /* ── SWAP ROUTE ────────────────────────────────── */
+  /* â”€â”€ SWAP ROUTE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function swapRoute() {
     const from = document.getElementById('fromInput');
     const to   = document.getElementById('toInput');
@@ -1763,8 +1892,8 @@
     }, 300);
   }
 
-  /* ── LOCATION AUTOCOMPLETE ──────────────────────── */
-  // Uses OWM Geocoding API — same key as weather, free, no extra signup
+  /* â”€â”€ LOCATION AUTOCOMPLETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  // Uses OWM Geocoding API â€” same key as weather, free, no extra signup
   const acState = { from: { timer: null, idx: -1 }, to: { timer: null, idx: -1 } };
 
   function initAutocomplete() {
@@ -1860,7 +1989,7 @@
   }
 
   function showACLoading(drop) {
-    drop.innerHTML = `<div class="ac-loading"><div class="ac-spinner"></div>Searching…</div>`;
+    drop.innerHTML = `<div class="ac-loading"><div class="ac-spinner"></div>Searchingâ€¦</div>`;
     drop.classList.add('open');
   }
 
@@ -1879,7 +2008,7 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  /* ── SHOW / HIDE KEY ───────────────────────────── */
+  /* â”€â”€ SHOW / HIDE KEY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function toggleKeyVis(inputId, btn) {
     const inp = document.getElementById(inputId);
     const showing = inp.type === 'text';
@@ -1892,7 +2021,7 @@
 </script>
 
 <script>
-  /* ── EVALUATION ENGINE ─────────────────────────── */
+  /* â”€â”€ EVALUATION ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   async function runEvaluation() {
     if (S.loading) return;
 
@@ -1906,7 +2035,7 @@
 
     // Require a starting point
     if (!S.from) {
-      toast('Please set a starting point first — tap the FROM field.', 'err');
+      toast('Please set a starting point first â€” tap the FROM field.', 'err');
       document.getElementById('fromInput').parentElement.parentElement.parentElement.style.border = '2px solid var(--accent-rose)';
       setTimeout(() => { document.getElementById('fromInput').parentElement.parentElement.parentElement.style.border = ''; }, 1800);
       openMapModal('from');
@@ -1933,7 +2062,7 @@
     let distKm       = null;   // straight-line km between From and To
     let distClass    = 'UNKNOWN'; // SHORT / MEDIUM / LONG / UNKNOWN
 
-    /* ── Step A: Weather ─────────────────────────── */
+    /* â”€â”€ Step A: Weather â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     try {
       // If we have exact coords from the map modal, use lat/lon query (more reliable)
       const wQuery = S.fromCoords
@@ -1971,14 +2100,14 @@
         return;
       }
       if (e.message === 'WEATHER_404') {
-        toast(`City "${S.location}" not found — try a nearby city name.`, 'err');
+        toast(`City "${S.location}" not found â€” try a nearby city name.`, 'err');
         return;
       }
       toast(`Weather fetch failed: ${e.message}`, 'err');
       return;
     }
 
-    /* ── Step B: Geocode destination → compute distance ── */
+    /* â”€â”€ Step B: Geocode destination â†’ compute distance â”€â”€ */
     if (S.to) {
       try {
         let destCoords = S.toCoords;  // use map-confirmed coords if available
@@ -2000,14 +2129,14 @@
           else                   distClass = 'LONG';
         }
       } catch (_) {
-        // Destination geocode failed — proceed without distance
+        // Destination geocode failed â€” proceed without distance
       }
     }
 
-    /* ── Step B: Traffic (TomTom Flow → weather fallback) ── */
+    /* â”€â”€ Step B: Traffic (TomTom Flow â†’ weather fallback) â”€â”€ */
     if (tKey) {
       try {
-        // TomTom Flow Segment Data v4 — free, no credit card, 2500 req/day
+        // TomTom Flow Segment Data v4 â€” free, no credit card, 2500 req/day
         // style=absolute, zoom=10, format=json
         const tUrl = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=${tKey}&point=${coords.lat},${coords.lon}`;
         const tRes = await fetch(tUrl);
@@ -2032,13 +2161,13 @@
         };
         S.lastTraffic = { state: trafficState, meta: trafficMeta };
       } catch (e) {
-        // TomTom failed — fall back to weather-based heuristic
+        // TomTom failed â€” fall back to weather-based heuristic
         trafficState = inferTrafficFromWeather(weatherMeta);
         trafficMeta  = { source: 'weather-inferred', inferred: true };
-        toast(`Traffic: ${e.message} — estimating from weather instead.`, 'err');
+        toast(`Traffic: ${e.message} â€” estimating from weather instead.`, 'err');
       }
     } else {
-      // No key — infer from weather silently
+      // No key â€” infer from weather silently
       trafficState = inferTrafficFromWeather(weatherMeta);
       trafficMeta  = { source: 'weather-inferred', inferred: true };
     }
@@ -2047,7 +2176,7 @@
     renderResult(weatherState, trafficState, weatherMeta, trafficMeta, distKm, distClass);
   }
 
-  /* ── HAVERSINE DISTANCE (km) ───────────────────── */
+  /* â”€â”€ HAVERSINE DISTANCE (km) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function haversineKm(a, b) {
     const R = 6371;
     const dLat = (b.lat - a.lat) * Math.PI / 180;
@@ -2058,7 +2187,7 @@
     return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
   }
 
-  /* ── TRAFFIC INFERENCE FROM WEATHER ────────────── */
+  /* â”€â”€ TRAFFIC INFERENCE FROM WEATHER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function inferTrafficFromWeather(wMeta) {
     if (!wMeta) return 'TRAFFIC_LOW';
     const desc = (wMeta.desc || '').toLowerCase();
@@ -2067,9 +2196,9 @@
     return 'TRAFFIC_LOW';
   }
 
-  /* ── RECOMMENDATION MATRIX ─────────────────────── */
-  // Budget tiers:  LOW < ₱100  |  NORMAL ₱100–₱250  |  HIGH > ₱250
-  // Distance:      SHORT < 5km  |  MEDIUM 5–20km  |  LONG > 20km
+  /* â”€â”€ RECOMMENDATION MATRIX â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  // Budget tiers:  LOW < â‚±100  |  NORMAL â‚±100â€“â‚±250  |  HIGH > â‚±250
+  // Distance:      SHORT < 5km  |  MEDIUM 5â€“20km  |  LONG > 20km
   function decideCondition(budget, energy, weather, traffic, distClass) {
     const bLow    = budget < 100;
     const bNormal = budget >= 100 && budget <= 250;
@@ -2077,12 +2206,12 @@
     const isLong  = distClass === 'LONG';
     const isMed   = distClass === 'MEDIUM';
 
-    // ── 1. High Risk: broke + exhausted + bad conditions ──────────────
+    // â”€â”€ 1. High Risk: broke + exhausted + bad conditions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (bLow && energy === 'EXHAUSTED' && (weather === 'RAINY' || traffic === 'TRAFFIC_HIGH')) {
       return 'stay';
     }
 
-    // ── 2. Ride-hail: high budget + bad weather or long distance ──────
+    // â”€â”€ 2. Ride-hail: high budget + bad weather or long distance â”€â”€â”€â”€â”€â”€
     if (bHigh && weather === 'RAINY' && energy === 'EXHAUSTED') {
       return 'ridehail_comfort';
     }
@@ -2093,31 +2222,31 @@
       return 'ridehail_comfort';
     }
 
-    // ── 3. Normal budget + rain + exhausted → motorcycle taxi ─────────
+    // â”€â”€ 3. Normal budget + rain + exhausted â†’ motorcycle taxi â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (bNormal && energy === 'EXHAUSTED' && weather === 'RAINY') {
       return 'welfare';
     }
 
-    // ── 4. Low budget + energized + clear but jammed → walk bypass ────
+    // â”€â”€ 4. Low budget + energized + clear but jammed â†’ walk bypass â”€â”€â”€â”€
     if (bLow && energy === 'ENERGIZED' && weather === 'CLEAR' && traffic === 'TRAFFIC_HIGH') {
       return 'active';
     }
 
-    // ── 5. Long distance + low budget + normal energy → plan carefully ─
+    // â”€â”€ 5. Long distance + low budget + normal energy â†’ plan carefully â”€
     if (bLow && isLong && energy === 'NORMAL') {
       return 'plan_long';
     }
 
-    // ── 6. High budget + clear + low traffic → optional upgrade ────────
+    // â”€â”€ 6. High budget + clear + low traffic â†’ optional upgrade â”€â”€â”€â”€â”€â”€â”€â”€
     if (bHigh && weather === 'CLEAR' && traffic === 'TRAFFIC_LOW') {
       return 'ridehail_optional';
     }
 
-    // ── 7. Baseline: everything manageable ────────────────────────────
+    // â”€â”€ 7. Baseline: everything manageable â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     return 'optimal';
   }
 
-  // Dynamic CONTENT — takes distance string for tip personalization
+  // Dynamic CONTENT â€” takes distance string for tip personalization
   function buildContent(distKm, distClass) {
     const distStr = distKm != null ? `${distKm.toFixed(1)} km` : 'your route';
     const distLabel = distClass === 'SHORT'  ? `short trip (${distStr})`
@@ -2127,53 +2256,53 @@
 
     return {
       stay: {
-        icon: '🛑', badge: 'High Risk · Stay',
-        action: '🛑 Do Not Commute Yet — Wait in Campus',
+        icon: 'ðŸ›‘', badge: 'High Risk Â· Stay',
+        action: 'ðŸ›‘ Do Not Commute Yet â€” Wait in Campus',
         justify: 'Your budget is too low to absorb surge pricing, and commuting while exhausted in bad conditions is a real safety and financial risk right now.',
-        tip: 'Stay in the library or student lounge for 1–1.5 hours. Charge your device, let fares drop, and leave when conditions improve.'
+        tip: 'Stay in the library or student lounge for 1â€“1.5 hours. Charge your device, let fares drop, and leave when conditions improve.'
       },
       ridehail_comfort: {
-        icon: '🚗', badge: 'Ride-Hail Recommended',
-        action: '🚗 Book a Ride-Hailing App Now',
-        justify: `You have the budget for it and conditions make mass transit miserable — rain, fatigue, and a ${distLabel} is a bad combination for jeepneys right now.`,
-        tip: `Open Grab or InDrive and book a direct trip. With ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 150)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 250)} estimated fare, it's worth every peso to get home dry and rested.`
+        icon: 'ðŸš—', badge: 'Ride-Hail Recommended',
+        action: 'ðŸš— Book a Ride-Hailing App Now',
+        justify: `You have the budget for it and conditions make mass transit miserable â€” rain, fatigue, and a ${distLabel} is a bad combination for jeepneys right now.`,
+        tip: `Open Grab or InDrive and book a direct trip. With â‚±${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 150)}â€“â‚±${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 250)} estimated fare, it's worth every peso to get home dry and rested.`
       },
       ridehail_express: {
-        icon: '🚗', badge: 'Express Option · High Budget',
-        action: '🚗 Consider Ride-Hailing to Beat the Jam',
+        icon: 'ðŸš—', badge: 'Express Option Â· High Budget',
+        action: 'ðŸš— Consider Ride-Hailing to Beat the Jam',
         justify: `Traffic is heavy and ${distLabel} via mass transit could take significantly longer. Your budget can cover a direct ride.`,
-        tip: `Check Grab or InDrive for current prices. Estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. If surge is under 1.5x, book it — the time saved is worth it.`
+        tip: `Check Grab or InDrive for current prices. Estimated â‚±${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}â€“â‚±${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. If surge is under 1.5x, book it â€” the time saved is worth it.`
       },
       ridehail_optional: {
-        icon: '✨', badge: 'Your Choice · Conditions Clear',
-        action: '🚌 Mass Transit or Ride-Hail — Both Work',
+        icon: 'âœ¨', badge: 'Your Choice Â· Conditions Clear',
+        action: 'ðŸšŒ Mass Transit or Ride-Hail â€” Both Work',
         justify: `Conditions are great and you have plenty of budget. Mass transit is totally fine for a ${distLabel}, but a ride-hailing app is also a comfortable option at no real sacrifice.`,
         tip: distClass === 'SHORT'
           ? `At ${distStr}, jeepney or tricycle is honestly ideal. Save the ride-hail budget for a longer or worse day.`
-          : `Grab or InDrive estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. Standard route is also smooth — your call.`
+          : `Grab or InDrive estimated â‚±${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}â€“â‚±${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. Standard route is also smooth â€” your call.`
       },
       welfare: {
-        icon: '🛵', badge: 'Priority Welfare',
-        action: '🛵 Motorcycle Taxi — Get Home Safe',
-        justify: `Rain plus exhaustion is a risk multiplier. For a ${distLabel}, standing in the rain waiting for mass transit is not worth the ₱50 you'd save.`,
-        tip: 'Book an Angkas or Joyride motorcycle taxi. Direct, covered, and faster than jeepney queues in the rain. Budget ₱60–₱150 depending on distance.'
+        icon: 'ðŸ›µ', badge: 'Priority Welfare',
+        action: 'ðŸ›µ Motorcycle Taxi â€” Get Home Safe',
+        justify: `Rain plus exhaustion is a risk multiplier. For a ${distLabel}, standing in the rain waiting for mass transit is not worth the â‚±50 you'd save.`,
+        tip: 'Book an Angkas or Joyride motorcycle taxi. Direct, covered, and faster than jeepney queues in the rain. Budget â‚±60â€“â‚±150 depending on distance.'
       },
       active: {
-        icon: '🚶', badge: 'Active Bypass',
-        action: '🚶‍♂️ Walk Past the Bottleneck',
+        icon: 'ðŸš¶', badge: 'Active Bypass',
+        action: 'ðŸš¶â€â™‚ï¸ Walk Past the Bottleneck',
         justify: `Traffic is jammed but you have the energy and the weather is clear. For a ${distLabel}, walking to a better terminal is faster than waiting in the queue.`,
-        tip: 'Walk 10–15 minutes past the main bottleneck terminal. You\'ll skip tricycle surge pricing, find a cheaper jeepney slot ahead of the crowd, and save ₱20–₱40.'
+        tip: 'Walk 10â€“15 minutes past the main bottleneck terminal. You\'ll skip tricycle surge pricing, find a cheaper jeepney slot ahead of the crowd, and save â‚±20â€“â‚±40.'
       },
       plan_long: {
-        icon: '🗺️', badge: 'Long Route · Plan Smart',
-        action: '🗺️ Plan Your Segments Carefully',
+        icon: 'ðŸ—ºï¸', badge: 'Long Route Â· Plan Smart',
+        action: 'ðŸ—ºï¸ Plan Your Segments Carefully',
         justify: `${distLabel} on a low budget means every transfer matters. One wrong choice and you're stuck mid-route with no fare left.`,
-        tip: 'Map out each leg: jeepney → UV Express or P2P bus → tricycle/trike for the last mile. Avoid taxis or tricycles for long segments. Target ₱60–₱90 total fare by using buses for the longest stretch.'
+        tip: 'Map out each leg: jeepney â†’ UV Express or P2P bus â†’ tricycle/trike for the last mile. Avoid taxis or tricycles for long segments. Target â‚±60â€“â‚±90 total fare by using buses for the longest stretch.'
       },
       optimal: {
-        icon: '🚌', badge: 'Green Light',
-        action: '🚌 Green Light — Take Your Standard Route',
-        justify: `Conditions are stable for ${distLabel}. Traffic is moving, weather is clear — this is your ideal commute window.`,
+        icon: 'ðŸšŒ', badge: 'Green Light',
+        action: 'ðŸšŒ Green Light â€” Take Your Standard Route',
+        justify: `Conditions are stable for ${distLabel}. Traffic is moving, weather is clear â€” this is your ideal commute window.`,
         tip: 'Take your usual jeepney, UV Express, or bus route now. Use the smooth ride to listen to a podcast or review notes.'
       }
     };
@@ -2203,22 +2332,22 @@
     const to   = S.to   || '';
     const routeEl = document.getElementById('rcRoute');
     if (from || to) {
-      document.getElementById('rcFrom').textContent = from || '—';
-      document.getElementById('rcTo').textContent   = to   || '—';
+      document.getElementById('rcFrom').textContent = from || 'â€”';
+      document.getElementById('rcTo').textContent   = to   || 'â€”';
       routeEl.style.display = 'flex';
     } else {
       routeEl.style.display = 'none';
     }
 
     // Weather dash
-    const wIcon = weatherState === 'RAINY' ? '🌧' : '☀️';
+    const wIcon = weatherState === 'RAINY' ? 'ðŸŒ§' : 'â˜€ï¸';
     document.getElementById('dashWeather').innerHTML = `${wIcon} ${weatherState === 'RAINY' ? 'Rainy' : 'Clear'}`;
     document.getElementById('dashWeatherSub').textContent = weatherMeta
-      ? `${weatherMeta.desc} · ${weatherMeta.temp}°C · ${weatherMeta.city}`
+      ? `${weatherMeta.desc} Â· ${weatherMeta.temp}Â°C Â· ${weatherMeta.city}`
       : 'Live data';
 
     // Traffic dash
-    const tIcon = trafficState === 'TRAFFIC_HIGH' ? '🔴' : '🟢';
+    const tIcon = trafficState === 'TRAFFIC_HIGH' ? 'ðŸ”´' : 'ðŸŸ¢';
     document.getElementById('dashTraffic').innerHTML = `${tIcon} ${trafficState === 'TRAFFIC_HIGH' ? 'High' : 'Low'} Congestion`;
 
     const speedBar = document.getElementById('speedBar');
@@ -2239,20 +2368,20 @@
     }
 
     // Budget dash
-    const budgetLabels = { LOW: ['🔴','Low','Under ₱100'], NORMAL: ['🟡','Normal','₱100–₱250'], HIGH: ['🟢','High','Over ₱250'] };
+    const budgetLabels = { LOW: ['ðŸ”´','Low','Under â‚±100'], NORMAL: ['ðŸŸ¡','Normal','â‚±100â€“â‚±250'], HIGH: ['ðŸŸ¢','High','Over â‚±250'] };
     const bTier = b < 100 ? 'LOW' : b <= 250 ? 'NORMAL' : 'HIGH';
     const [bIcon, bLabel, bRange] = budgetLabels[bTier];
-    document.getElementById('dashBudget').innerHTML = `${bIcon} ₱${b} <span style="font-size:.75rem;opacity:.6">(${bLabel})</span>`;
+    document.getElementById('dashBudget').innerHTML = `${bIcon} â‚±${b} <span style="font-size:.75rem;opacity:.6">(${bLabel})</span>`;
     document.getElementById('dashBudgetSub').textContent = bRange;
 
     // Distance dash
     if (distKm != null) {
       const dLabel = dc === 'SHORT' ? 'Short' : dc === 'MEDIUM' ? 'Medium' : 'Long';
-      const dIcon  = dc === 'SHORT' ? '🟢' : dc === 'MEDIUM' ? '🟡' : '🔴';
+      const dIcon  = dc === 'SHORT' ? 'ðŸŸ¢' : dc === 'MEDIUM' ? 'ðŸŸ¡' : 'ðŸ”´';
       document.getElementById('dashDist').innerHTML = `${dIcon} ${distKm.toFixed(1)} km`;
       document.getElementById('dashDistSub').textContent = `${dLabel} distance (straight-line)`;
     } else {
-      document.getElementById('dashDist').textContent = S.to ? 'Calculating…' : 'No destination set';
+      document.getElementById('dashDist').textContent = S.to ? 'Calculatingâ€¦' : 'No destination set';
       document.getElementById('dashDistSub').textContent = S.to ? '' : 'Enter a "To" location above';
     }
 
@@ -2265,14 +2394,14 @@
     card.classList.add('slide-in');
   }
 
-  /* ── LOADING STATE ─────────────────────────────── */
+  /* â”€â”€ LOADING STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function setLoading(on) {
     S.loading = on;
     const btn = document.getElementById('evalBtn');
     const txt = document.getElementById('evalBtnText');
     btn.disabled = on;
     if (on) {
-      btn.innerHTML = '<div class="spinner"></div><span>Fetching live data…</span>';
+      btn.innerHTML = '<div class="spinner"></div><span>Fetching live dataâ€¦</span>';
     } else {
       btn.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.13 1.17 2 2 0 012.11 1H5a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.9a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15z"/></svg>
@@ -2280,23 +2409,23 @@
     }
   }
 
-  /* ── WEATHER KEY ERROR HELPER ──────────────────── */
+  /* â”€â”€ WEATHER KEY ERROR HELPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function showWeatherKeyError() {
     // Show the inline banner in settings
     const banner = document.getElementById('wKeyBanner');
     if (banner) banner.style.display = 'flex';
     // Navigate to settings tab
     document.querySelector('[data-page="settings"]').click();
-    toast('Weather key not active yet — see the notice on this page.', 'err');
+    toast('Weather key not active yet â€” see the notice on this page.', 'err');
   }
 
-  /* ── TOAST ─────────────────────────────────────── */
+  /* â”€â”€ TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   function toast(msg, type = '') {
     const c = document.getElementById('toasts');
     const el = document.createElement('div');
     el.className = 'toast ' + type;
-    const icons = { ok: '✅', err: '⚠️', '': '🔔' };
-    el.innerHTML = `<span>${icons[type] || '🔔'}</span><span>${msg}</span>`;
+    const icons = { ok: 'âœ…', err: 'âš ï¸', '': 'ðŸ””' };
+    el.innerHTML = `<span>${icons[type] || 'ðŸ””'}</span><span>${msg}</span>`;
     c.appendChild(el);
     setTimeout(() => {
       el.classList.add('out');
@@ -2306,177 +2435,174 @@
 </script>
 
 <script>
-/* ══════════════════════════════════════════════════════
-   MAP MODAL — TomTom-powered location picker
-   Angkas-style slide-up overlay with search + map + confirm
-══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   MAP MODAL â€” full-screen location picker
+   Grab/Google Maps style: map fills screen, floating UI
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 const MAP_MODAL = {
-  activeField: null,   // 'from' | 'to'
-  mapInstances: {},    // { from: TomTomMap, to: TomTomMap }
-  pendingCoords: null, // { lat, lon, name } — staged selection
+  activeField: null,
+  mapInstances: {},
+  pendingCoords: null,
   searchTimer: null,
+  reverseTimer: null,
   suggIdx: -1,
-  mapReady: false,
   isDemoMode: false,
 };
 
-/* ── Demo fallback locations (Biñan / DLSB area) ── */
+/* â”€â”€ Demo fallback locations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const DEMO_LOCATIONS = [
-  { name: 'DLSB Main Gate',         detail: 'De La Salle Lipa, Biñan', lat: 14.3320, lon: 121.0812 },
-  { name: 'Biñan Central Terminal', detail: 'Biñan City, Laguna',       lat: 14.3344, lon: 121.0800 },
-  { name: 'SM City BF Parañaque',   detail: 'BF Homes, Parañaque',      lat: 14.4642, lon: 121.0010 },
-  { name: 'CALAX Biñan Exit',       detail: 'CALAX, Biñan, Laguna',     lat: 14.3279, lon: 121.0736 },
-  { name: 'NUVALI Town Center',     detail: 'Sta. Rosa, Laguna',         lat: 14.2854, lon: 121.0580 },
-  { name: 'Alabang Town Center',    detail: 'Muntinlupa City, Metro Manila', lat: 14.4200, lon: 121.0455 },
-  { name: 'LRT-1 Baclaran Station', detail: 'Parañaque, Metro Manila',   lat: 14.5319, lon: 120.9980 },
-  { name: 'Mall of Asia',           detail: 'Pasay City, Metro Manila',  lat: 14.5356, lon: 120.9826 },
+  { name: 'DLSB Main Gate',         detail: 'De La Salle Lipa, BiÃ±an',       lat: 14.3320, lon: 121.0812 },
+  { name: 'BiÃ±an Central Terminal', detail: 'BiÃ±an City, Laguna',             lat: 14.3344, lon: 121.0800 },
+  { name: 'CALAX BiÃ±an Exit',       detail: 'CALAX, BiÃ±an, Laguna',           lat: 14.3279, lon: 121.0736 },
+  { name: 'NUVALI Town Center',     detail: 'Sta. Rosa, Laguna',              lat: 14.2854, lon: 121.0580 },
+  { name: 'Alabang Town Center',    detail: 'Muntinlupa City, Metro Manila',  lat: 14.4200, lon: 121.0455 },
+  { name: 'LRT-1 Baclaran Station', detail: 'ParaÃ±aque, Metro Manila',        lat: 14.5319, lon: 120.9980 },
+  { name: 'Mall of Asia',           detail: 'Pasay City, Metro Manila',       lat: 14.5356, lon: 120.9826 },
+  { name: 'SM City BF ParaÃ±aque',   detail: 'BF Homes, ParaÃ±aque',            lat: 14.4642, lon: 121.0010 },
 ];
 
-/* ── Open the modal ─────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  OPEN / CLOSE                                       */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function openMapModal(field) {
-  MAP_MODAL.activeField = field;
+  MAP_MODAL.activeField   = field;
   MAP_MODAL.pendingCoords = null;
 
-  const title = field === 'from' ? '📍 Set Starting Point' : '🏁 Set Destination';
-  document.getElementById('mapModalTitle').textContent = title;
+  // Set field-appropriate icon & label
+  const isFrom = field === 'from';
+  const iconEl = document.getElementById('locCardIcon');
+  iconEl.className = 'loc-card-icon ' + (isFrom ? 'from-icon' : 'to-icon');
+  iconEl.innerHTML = isFrom
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7BB3F0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="#7BB3F0"/></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5B8C4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
 
-  // Pre-fill search with existing value
-  const existingVal = document.getElementById(field === 'from' ? 'fromInput' : 'toInput').value;
-  const searchInp = document.getElementById('mapSearchInput');
-  searchInp.value = existingVal || '';
+  document.getElementById('locCardLabel').textContent = isFrom ? 'Starting point' : 'Destination';
+  _setCardResolving(true);
 
-  // Lock body scroll
+  // Pre-fill search if field already has a value
+  const existing = document.getElementById(isFrom ? 'fromInput' : 'toInput').value;
+  const si = document.getElementById('mapSearchInput');
+  si.value = existing || '';
+  _toggleClear(si.value);
+
   document.body.style.overflow = 'hidden';
+  document.getElementById('mapModalOverlay').classList.add('open');
+  document.getElementById('confirmLocBtn').disabled = true;
 
-  // Show overlay
-  const overlay = document.getElementById('mapModalOverlay');
-  overlay.classList.add('open');
-
-  // Reset confirm button
-  const confirmBtn = document.getElementById('confirmLocBtn');
-  confirmBtn.disabled = true;
-  confirmBtn.querySelector('svg + *') || (confirmBtn.lastChild.textContent = 'Confirm Location ✨');
-
-  // Focus search after animation
-  setTimeout(() => searchInp.focus(), 340);
-
-  // Init map for this field if not done yet
+  _closeSuggestions();
   _initMapForField(field);
 
-  // Close suggestions dropdown
-  _closeSuggestions();
+  setTimeout(() => si.focus(), 350);
 }
 
-/* ── Close the modal ────────────────────────────── */
 function closeMapModal() {
-  const overlay = document.getElementById('mapModalOverlay');
-  overlay.classList.remove('open');
+  document.getElementById('mapModalOverlay').classList.remove('open');
   document.body.style.overflow = '';
   _closeSuggestions();
-  MAP_MODAL.activeField = null;
+  MAP_MODAL.activeField   = null;
   MAP_MODAL.pendingCoords = null;
 }
 
-/* ── Confirm & populate back to dashboard ──────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  CONFIRM                                            */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function confirmLocation() {
   const p = MAP_MODAL.pendingCoords;
   if (!p) return;
-
-  const field = MAP_MODAL.activeField;
+  const field   = MAP_MODAL.activeField;
   const inputId = field === 'from' ? 'fromInput' : 'toInput';
-  const inp = document.getElementById(inputId);
-
-  // Always display the human-readable name — never raw coords
-  inp.value = p.name;
-
-  // Update app state — name for display/OWM, coords for direct distance calc
+  const inp     = document.getElementById(inputId);
+  inp.value     = p.name;
   if (field === 'from') {
-    S.from       = p.name;
-    S.location   = p.name;
+    S.from = p.name; S.location = p.name;
     S.fromCoords = { lat: p.lat, lon: p.lon };
   } else {
-    S.to       = p.name;
+    S.to = p.name;
     S.toCoords = { lat: p.lat, lon: p.lon };
   }
-
-  // Visual pulse on the field
   inp.style.transition = 'background .3s';
   inp.style.background = 'rgba(123,179,240,.18)';
   setTimeout(() => { inp.style.background = ''; }, 600);
-
-  toast(`${field === 'from' ? 'Start' : 'Destination'} set to ${p.name} ✨`, 'ok');
+  toast(`${field === 'from' ? 'Start' : 'Destination'} set to ${p.name} âœ¨`, 'ok');
   closeMapModal();
 }
 
-/* ── Init TomTom map for a field ────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  MAP INIT                                           */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function _initMapForField(field) {
-  const tKey = CFG.trafficKey;
+  const tKey    = CFG.trafficKey;
   const mapElId = field === 'from' ? 'mapFromEl' : 'mapToEl';
 
-  // Show the right map container, hide the other
   document.getElementById('mapFromEl').style.display = field === 'from' ? 'block' : 'none';
   document.getElementById('mapToEl').style.display   = field === 'to'   ? 'block' : 'none';
-  document.getElementById('mapLiveArea').style.display = 'flex';
-  document.getElementById('demoListArea').style.display = 'none';
+  document.getElementById('mapLiveArea').style.display   = 'block';
+  document.getElementById('demoListArea').style.display  = 'none';
+  document.getElementById('mapCenterPin').style.display  = 'block';
+  document.getElementById('pinShadow').style.display     = 'block';
+  document.getElementById('mapFloatRight').style.display = 'flex';
 
-  // Already initialized for this field
+  // Map already built for this field â€” just re-open it
   if (MAP_MODAL.mapInstances[field]) {
-    MAP_MODAL.mapReady = true;
-    MAP_MODAL.isDemoMode = false;
-    _updateCenterPinCoords();
+    const inst = MAP_MODAL.mapInstances[field];
+    setTimeout(() => inst.map.resize(), 200);
+    // Reverse-geocode the current center
+    const c = inst.map.getCenter();
+    _reverseGeocode(c.lat, c.lng);
     return;
   }
 
-  // No TomTom key → go demo immediately
-  if (!tKey) {
-    _activateDemoMode();
-    return;
-  }
+  if (!tKey) { _activateDemoMode(); return; }
 
-  // Try to load TomTom map
   try {
-    if (typeof tt === 'undefined' || !tt.map) throw new Error('TomTom SDK not loaded');
+    if (typeof tt === 'undefined' || !tt.map) throw new Error('SDK not loaded');
 
-    const center = CFG.defaultCoords;
+    // Center on stored coords if available, else default
+    const stored = field === 'from' ? S.fromCoords : S.toCoords;
+    const center = stored || CFG.defaultCoords;
+
     const mapInst = tt.map({
       key: tKey,
       container: mapElId,
       center: [center.lon, center.lat],
-      zoom: 14,
+      zoom: 15,
       language: 'en-GB',
+      // Hide TomTom's own UI controls â€” we provide ours
+      attributionControl: false,
     });
 
-    // Custom marker element
-    const markerEl = document.createElement('div');
-    markerEl.innerHTML = `<div class="map-pin-marker"></div>`;
-    markerEl.style.cssText = 'width:36px;height:36px;cursor:pointer;';
-
-    const marker = new tt.Marker({ element: markerEl, anchor: 'bottom' })
-      .setLngLat([center.lon, center.lat])
-      .addTo(mapInst);
-
-    MAP_MODAL.mapInstances[field] = { map: mapInst, marker };
+    MAP_MODAL.mapInstances[field] = { map: mapInst };
 
     mapInst.on('load', () => {
-      MAP_MODAL.mapReady = true;
-      MAP_MODAL.isDemoMode = false;
-      document.getElementById('mapCenterPin').style.display = 'block';
+      mapInst.resize();
+      // Immediately resolve the starting center
+      _reverseGeocode(center.lat, center.lon);
     });
 
-    mapInst.on('error', () => _activateDemoMode());
+    mapInst.on('error', () => {
+      console.warn('TomTom map error, switching to demo');
+      _activateDemoMode();
+    });
 
-    // Update pending coords as the user drags the map
+    /* Drag events â€” lift pin on movestart, resolve on moveend */
     mapInst.on('movestart', () => {
-      document.getElementById('mapCenterPin').classList.add('dragging');
-    });
-    mapInst.on('moveend', () => {
-      document.getElementById('mapCenterPin').classList.remove('dragging');
-      const c = mapInst.getCenter();
-      _reverseGeocode(c.lat, c.lng, field);
+      document.getElementById('mapCenterPin').classList.add('lifting');
+      document.getElementById('pinShadow').classList.add('lifting');
+      // While dragging, show spinner in card
+      _setCardResolving(true);
+      document.getElementById('confirmLocBtn').disabled = true;
     });
 
-    // Resize after modal animation
+    mapInst.on('moveend', () => {
+      document.getElementById('mapCenterPin').classList.remove('lifting');
+      document.getElementById('pinShadow').classList.remove('lifting');
+      const c = mapInst.getCenter();
+      // Debounce reverse-geocode slightly so rapid panning doesn't spam
+      clearTimeout(MAP_MODAL.reverseTimer);
+      MAP_MODAL.reverseTimer = setTimeout(() => _reverseGeocode(c.lat, c.lng), 300);
+    });
+
     setTimeout(() => mapInst.resize(), 380);
 
   } catch (err) {
@@ -2485,14 +2611,136 @@ function _initMapForField(field) {
   }
 }
 
-/* ── Switch to demo mode ──────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  ZOOM + MY LOCATION                                 */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function _mapZoom(delta) {
+  const field = MAP_MODAL.activeField;
+  const inst  = MAP_MODAL.mapInstances[field];
+  if (!inst) return;
+  inst.map.zoomTo(inst.map.getZoom() + delta, { duration: 220 });
+}
+
+function _goToMyLocation() {
+  if (!navigator.geolocation) { toast('Geolocation not supported', 'err'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    const field = MAP_MODAL.activeField;
+    const inst  = MAP_MODAL.mapInstances[field];
+    if (inst) {
+      inst.map.easeTo({ center: [lng, lat], zoom: 16, duration: 600 });
+    }
+    _reverseGeocode(lat, lng);
+  }, () => toast('Could not get your location', 'err'));
+}
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  BOTTOM CARD HELPERS                                */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+function _setCardResolving(on) {
+  document.getElementById('locResolving').style.display  = on ? 'inline-flex' : 'none';
+  document.getElementById('locCardName').style.opacity   = on ? '0' : '1';
+  document.getElementById('locCardDetail').style.display = on ? 'none' : 'block';
+}
+
+function _setCardAddress(name, detail) {
+  const nameEl   = document.getElementById('locCardName');
+  const detailEl = document.getElementById('locCardDetail');
+  // Swap-in with tiny fade
+  nameEl.style.opacity = '0';
+  setTimeout(() => {
+    nameEl.textContent   = name || 'Unknown location';
+    detailEl.textContent = detail || '';
+    nameEl.style.transition  = 'opacity .2s';
+    nameEl.style.opacity = '1';
+  }, 80);
+  _setCardResolving(false);
+  document.getElementById('confirmLocBtn').disabled = !name;
+}
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  REVERSE GEOCODE (3-tier: TomTom â†’ OSM â†’ OWM)      */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+async function _reverseGeocode(lat, lng) {
+  const tKey = CFG.trafficKey;
+  let name = null, detail = '';
+
+  // Attempt 1: TomTom
+  if (tKey) {
+    try {
+      if (typeof tt !== 'undefined' && tt.services) {
+        const res = await tt.services.reverseGeocode({
+          key: tKey, position: { lat, lon: lng }, language: 'en-GB',
+        }).go();
+        const addr = res.addresses?.[0]?.address;
+        if (addr) {
+          name   = addr.streetName && addr.municipalitySubdivision
+            ? `${addr.streetName}, ${addr.municipalitySubdivision}`
+            : addr.freeformAddress || addr.municipality || null;
+          detail = addr.municipality || addr.countrySubdivision || '';
+          if (name && name === detail) detail = addr.country || '';
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Attempt 2: OSM Nominatim (free, no key)
+  if (!name) {
+    try {
+      const r = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      if (r.ok) {
+        const d = await r.json();
+        if (d?.address) {
+          const a = d.address;
+          const street = a.road || a.pedestrian || a.footway || '';
+          const sub    = a.suburb || a.neighbourhood || a.village || '';
+          const city   = a.city || a.town || a.municipality || a.county || '';
+          name   = street ? `${street}${sub ? ', ' + sub : ''}` : sub || city || null;
+          detail = city || sub || '';
+          if (!name && d.display_name) name = d.display_name.split(',').slice(0,2).join(',').trim();
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Attempt 3: OWM reverse
+  if (!name && CFG.weatherKey) {
+    try {
+      const r = await fetch(
+        `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lng}&limit=1&appid=${CFG.weatherKey}`
+      );
+      if (r.ok) {
+        const d = await r.json();
+        if (d?.[0]) {
+          name   = d[0].local_names?.en || d[0].name;
+          detail = [d[0].state, d[0].country].filter(Boolean).join(', ');
+        }
+      }
+    } catch (_) {}
+  }
+
+  if (!name) name = 'Pinned location';
+
+  MAP_MODAL.pendingCoords = { lat, lon: lng, name };
+  document.getElementById('mapSearchInput').value = name;
+  _toggleClear(name);
+  _setCardAddress(name, detail);
+}
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  DEMO MODE                                          */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function _activateDemoMode() {
   MAP_MODAL.isDemoMode = true;
-  MAP_MODAL.mapReady = false;
-
-  document.getElementById('mapLiveArea').style.display = 'none';
-  document.getElementById('demoListArea').style.display = 'block';
-  document.getElementById('mapCenterPin').style.display = 'none';
+  document.getElementById('mapLiveArea').style.display   = 'none';
+  document.getElementById('mapCenterPin').style.display  = 'none';
+  document.getElementById('pinShadow').style.display     = 'none';
+  document.getElementById('mapFloatRight').style.display = 'none';
+  document.getElementById('demoListArea').style.display  = 'block';
+  document.getElementById('mapBottomCard').style.display = 'none';
 
   const list = document.getElementById('demoOptionsList');
   list.innerHTML = DEMO_LOCATIONS.map((loc, i) =>
@@ -2510,94 +2758,62 @@ function _activateDemoMode() {
   ).join('');
 }
 
-/* ── Select demo option ─────────────────────────── */
 function selectDemoLocation(idx) {
   const loc = DEMO_LOCATIONS[idx];
   MAP_MODAL.pendingCoords = { lat: loc.lat, lon: loc.lon, name: loc.name };
-
-  // Highlight selection
   document.querySelectorAll('.demo-option').forEach((el, i) => {
     el.style.borderColor = i === idx ? 'var(--primary)' : '';
     el.style.background  = i === idx ? '#EEF4FF' : '';
   });
-
   document.getElementById('mapSearchInput').value = loc.name;
-  document.getElementById('confirmLocBtn').disabled = false;
+  // Show a bottom confirm card for demo too
+  document.getElementById('mapBottomCard').style.display = 'block';
+  _setCardAddress(loc.name, loc.detail);
 }
 
-/* ── TomTom Fuzzy Search (autocomplete) ─────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  SEARCH (TomTom fuzzy â†’ OWM fallback)               */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function _runModalSearch(query) {
-  const tKey = CFG.trafficKey;
   const suggBox = document.getElementById('mapSuggestions');
-
   if (query.length < 2) { _closeSuggestions(); return; }
-
-  // Loading state
-  suggBox.innerHTML = `<div class="sugg-loading"><div class="sugg-spinner"></div>Searching…</div>`;
+  suggBox.innerHTML = `<div class="sugg-loading"><div class="sugg-spinner"></div>Searchingâ€¦</div>`;
   suggBox.classList.add('open');
-
   clearTimeout(MAP_MODAL.searchTimer);
   MAP_MODAL.searchTimer = setTimeout(async () => {
-    // No key? Use OWM geocoding as fallback, or demo
-    if (!tKey) {
-      _runOWMSearch(query);
-      return;
+    const tKey = CFG.trafficKey;
+    if (tKey && typeof tt !== 'undefined' && tt.services) {
+      try {
+        const res = await tt.services.fuzzySearch({
+          key: tKey, query, limit: 6, countrySet: 'PH', language: 'en-GB',
+        }).go();
+        _renderSuggestions(res.results || []); return;
+      } catch (_) {}
     }
-    try {
-      if (typeof tt === 'undefined' || !tt.services) throw new Error('SDK not loaded');
-
-      const results = await tt.services.fuzzySearch({
-        key: tKey,
-        query: query,
-        limit: 6,
-        countrySet: 'PH',
-        language: 'en-GB',
-      }).go();
-
-      _renderModalSuggestions(results.results || []);
-    } catch (e) {
-      // Fallback to OWM or demo list
-      _runOWMSearch(query);
-    }
-  }, 320);
+    _runOWMSearch(query);
+  }, 300);
 }
 
-/* ── OWM geocode fallback for search ─────────────── */
 async function _runOWMSearch(query) {
-  const wKey = CFG.weatherKey;
-  if (!wKey) { _closeSuggestions(); return; }
-
+  if (!CFG.weatherKey) { _closeSuggestions(); return; }
   try {
-    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${wKey}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('geo fail');
-    const data = await res.json();
-    // Normalize to TomTom-like shape
-    const normalized = (data || []).map(r => ({
-      address: {
-        freeformAddress: [r.name, r.state, r.country].filter(Boolean).join(', '),
-        municipality: r.name,
-        country: r.country,
-      },
+    const r = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${CFG.weatherKey}`);
+    if (!r.ok) throw new Error();
+    const data = await r.json();
+    _renderSuggestions((data || []).map(r => ({
+      address: { freeformAddress: [r.name, r.state, r.country].filter(Boolean).join(', '), municipality: r.name },
       position: { lat: r.lat, lon: r.lng || r.lon },
-    }));
-    _renderModalSuggestions(normalized);
-  } catch (_) {
-    _closeSuggestions();
-  }
+    })));
+  } catch (_) { _closeSuggestions(); }
 }
 
-/* ── Render suggestion list ──────────────────────── */
-function _renderModalSuggestions(results) {
+function _renderSuggestions(results) {
   MAP_MODAL.suggIdx = -1;
   const suggBox = document.getElementById('mapSuggestions');
-
-  if (!results || results.length === 0) {
-    suggBox.innerHTML = `<div class="sugg-loading" style="opacity:.6;pointer-events:none">No results found</div>`;
-    suggBox.classList.add('open');
-    return;
+  if (!results.length) {
+    suggBox.innerHTML = `<div class="sugg-loading" style="opacity:.6">No results found</div>`;
+    suggBox.classList.add('open'); return;
   }
-
   suggBox.innerHTML = results.map((r, i) => {
     const name   = r.poi?.name || r.address?.municipality || r.address?.freeformAddress?.split(',')[0] || 'Location';
     const detail = r.address?.freeformAddress || '';
@@ -2615,136 +2831,53 @@ function _renderModalSuggestions(results) {
       </div>
     </div>`;
   }).join('');
-
   suggBox.querySelectorAll('.sugg-item').forEach(item => {
-    item.addEventListener('mousedown', e => {
-      e.preventDefault();
-      _selectSuggestion(item);
-    });
+    item.addEventListener('mousedown', e => { e.preventDefault(); _selectSuggestion(item); });
   });
-
   suggBox.classList.add('open');
 }
 
-/* ── Select a suggestion ────────────────────────── */
 function _selectSuggestion(item) {
   const name = item.dataset.name;
   const lat  = parseFloat(item.dataset.lat);
   const lon  = parseFloat(item.dataset.lon);
-
   document.getElementById('mapSearchInput').value = name;
-  MAP_MODAL.pendingCoords = { lat, lon, name };
-  document.getElementById('confirmLocBtn').disabled = false;
-
+  _toggleClear(name);
   _closeSuggestions();
-
-  // Pan map to location
+  MAP_MODAL.pendingCoords = { lat, lon, name };
+  _setCardAddress(name, item.dataset.detail);
   const field = MAP_MODAL.activeField;
   const inst  = MAP_MODAL.mapInstances[field];
-  if (inst && inst.map) {
-    inst.map.easeTo({ center: [lon, lat], zoom: 15, duration: 500 });
-    inst.marker.setLngLat([lon, lat]);
+  if (inst?.map) {
+    inst.map.easeTo({ center: [lon, lat], zoom: 16, duration: 500 });
   }
 }
 
-/* ── Reverse geocode from map drag ──────────────── */
-async function _reverseGeocode(lat, lng, field) {
-  const tKey = CFG.trafficKey;
-  let name = null;
-
-  // Attempt 1: TomTom reverse geocode (if key is available)
-  if (tKey) {
-    try {
-      if (typeof tt !== 'undefined' && tt.services) {
-        const res = await tt.services.reverseGeocode({
-          key: tKey,
-          position: { lat, lon: lng },
-          language: 'en-GB',
-        }).go();
-        const addr = res.addresses?.[0]?.address;
-        if (addr) {
-          name = addr.streetName && addr.municipalitySubdivision
-            ? `${addr.streetName}, ${addr.municipalitySubdivision}`
-            : addr.freeformAddress || addr.municipality || addr.countrySubdivision || null;
-        }
-      }
-    } catch (_) { /* fall through to next method */ }
-  }
-
-  // Attempt 2: OpenStreetMap Nominatim — free, no key needed
-  if (!name) {
-    try {
-      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=en`;
-      const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.address) {
-          const a = data.address;
-          // Build a clean, human-readable label from the most specific fields available
-          const street  = a.road || a.pedestrian || a.footway || '';
-          const suburb  = a.suburb || a.neighbourhood || a.village || '';
-          const city    = a.city || a.town || a.municipality || a.county || '';
-          if (street && city)       name = `${street}, ${city}`;
-          else if (street && suburb) name = `${street}, ${suburb}`;
-          else if (suburb && city)  name = `${suburb}, ${city}`;
-          else                       name = data.display_name?.split(',').slice(0, 2).join(',').trim() || null;
-        }
-      }
-    } catch (_) { /* fall through */ }
-  }
-
-  // Attempt 3: OWM reverse geocode — needs weather key but works with just coords
-  if (!name && CFG.weatherKey) {
-    try {
-      const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lng}&limit=1&appid=${CFG.weatherKey}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data?.[0]) {
-          const r = data[0];
-          const n = (r.local_names?.en) || r.name;
-          const detail = [r.state, r.country].filter(Boolean).join(', ');
-          name = detail ? `${n}, ${detail}` : n;
-        }
-      }
-    } catch (_) { /* fall through */ }
-  }
-
-  // Last resort: clean coordinate string (rare but honest)
-  if (!name) name = `${lat.toFixed(4)}° N, ${Math.abs(lng).toFixed(4)}° E`;
-
-  MAP_MODAL.pendingCoords = { lat, lon: lng, name };
-  document.getElementById('mapSearchInput').value = name;
-  document.getElementById('confirmLocBtn').disabled = false;
-}
-
-/* ── Update center pin coords label ─────────────── */
-function _updateCenterPinCoords() {
-  const field = MAP_MODAL.activeField;
-  const inst  = MAP_MODAL.mapInstances[field];
-  if (!inst) return;
-  const c = inst.map.getCenter();
-  // Kick off a real reverse geocode for the current map center
-  _reverseGeocode(c.lat, c.lng, field);
-}
-
-/* ── Close suggestions ──────────────────────────── */
 function _closeSuggestions() {
   const s = document.getElementById('mapSuggestions');
   if (s) { s.classList.remove('open'); s.innerHTML = ''; }
   MAP_MODAL.suggIdx = -1;
 }
 
-/* ── Wire up modal search input ─────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInp = document.getElementById('mapSearchInput');
-  const suggBox   = document.getElementById('mapSuggestions');
+function _toggleClear(val) {
+  const btn = document.getElementById('mapSearchClear');
+  if (btn) btn.classList.toggle('visible', !!(val && val.length > 0));
+}
 
-  searchInp.addEventListener('input', () => {
-    _runModalSearch(searchInp.value.trim());
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*  WIRE UP EVENTS (DOMContentLoaded)                  */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+document.addEventListener('DOMContentLoaded', () => {
+  const si      = document.getElementById('mapSearchInput');
+  const suggBox = document.getElementById('mapSuggestions');
+  const clearBtn = document.getElementById('mapSearchClear');
+
+  si.addEventListener('input', () => {
+    _toggleClear(si.value);
+    _runModalSearch(si.value.trim());
   });
 
-  searchInp.addEventListener('keydown', e => {
+  si.addEventListener('keydown', e => {
     const items = suggBox.querySelectorAll('.sugg-item');
     if (!suggBox.classList.contains('open') || !items.length) return;
     if (e.key === 'ArrowDown') {
@@ -2766,17 +2899,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Tap outside suggestions to close
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.modal-search-wrap')) _closeSuggestions();
+  clearBtn?.addEventListener('click', () => {
+    si.value = '';
+    _toggleClear('');
+    _closeSuggestions();
+    si.focus();
   });
 
-  // Close modal on overlay backdrop tap
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#mapSearchPill')) _closeSuggestions();
+  });
+
   document.getElementById('mapModalOverlay').addEventListener('click', e => {
     if (e.target === document.getElementById('mapModalOverlay')) closeMapModal();
   });
 
-  // Keyboard accessibility — Escape closes modal
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && MAP_MODAL.activeField) closeMapModal();
   });
