@@ -2070,27 +2070,35 @@
   /* ── RECOMMENDATION MATRIX ─────────────────────── */
   // Budget tiers:  LOW < ₱100  |  NORMAL ₱100–₱250  |  HIGH > ₱250
   // Distance:      SHORT < 5km  |  MEDIUM 5–20km  |  LONG > 20km
-  function decideCondition(budget, energy, weather, traffic, distClass) {
+  function decideCondition(budget, energy, weather, traffic, distClass, distKm) {
     const bLow    = budget < 100;
     const bNormal = budget >= 100 && budget <= 250;
     const bHigh   = budget > 250;
     const isLong  = distClass === 'LONG';
     const isMed   = distClass === 'MEDIUM';
 
+    // Estimate the minimum realistic ride-hail fare for this distance.
+    // ₱18/km low-end, floor of ₱80. If distance unknown, use a conservative ₱200 guess.
+    const minFare = distKm != null ? Math.max(Math.round(distKm * 18), 80) : 200;
+    // Can the budget actually cover a ride-hail?
+    const canAffordRide = budget >= minFare;
+
     // ── 1. High Risk: broke + exhausted + bad conditions ──────────────
     if (bLow && energy === 'EXHAUSTED' && (weather === 'RAINY' || traffic === 'TRAFFIC_HIGH')) {
       return 'stay';
     }
 
-    // ── 2. Ride-hail: high budget + bad weather or long distance ──────
-    if (bHigh && weather === 'RAINY' && energy === 'EXHAUSTED') {
-      return 'ridehail_comfort';
-    }
-    if (bHigh && (isLong || isMed) && traffic === 'TRAFFIC_HIGH') {
-      return 'ridehail_express';
-    }
-    if (bHigh && weather === 'RAINY' && (isLong || isMed)) {
-      return 'ridehail_comfort';
+    // ── 2. Ride-hail: only if budget can actually cover the fare ───────
+    if (canAffordRide) {
+      if (bHigh && weather === 'RAINY' && energy === 'EXHAUSTED') {
+        return 'ridehail_comfort';
+      }
+      if (bHigh && (isLong || isMed) && traffic === 'TRAFFIC_HIGH') {
+        return 'ridehail_express';
+      }
+      if (bHigh && weather === 'RAINY' && (isLong || isMed)) {
+        return 'ridehail_comfort';
+      }
     }
 
     // ── 3. Normal budget + rain + exhausted → motorcycle taxi ─────────
@@ -2108,12 +2116,12 @@
       return 'plan_long';
     }
 
-    // ── 6. High budget + clear + low traffic → optional upgrade ────────
-    if (bHigh && weather === 'CLEAR' && traffic === 'TRAFFIC_LOW') {
+    // ── 6. High budget + clear + low traffic + affordable → optional ───
+    if (bHigh && canAffordRide && weather === 'CLEAR' && traffic === 'TRAFFIC_LOW') {
       return 'ridehail_optional';
     }
 
-    // ── 7. Baseline: everything manageable ────────────────────────────
+    // ── 7. Baseline ───────────────────────────────────────────────────
     return 'optimal';
   }
 
@@ -2141,8 +2149,8 @@
       ridehail_express: {
         icon: '🚗', badge: 'Express Option · High Budget',
         action: '🚗 Consider Ride-Hailing to Beat the Jam',
-        justify: `Traffic is heavy and ${distLabel} via mass transit could take significantly longer. Your budget can cover a direct ride.`,
-        tip: `Check Grab or InDrive for current prices. Estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)}. If surge is under 1.5x, book it — the time saved is worth it.`
+        justify: `Traffic is heavy and ${distLabel} via mass transit could take significantly longer. Your budget covers an estimated ₱${Math.round(distKm != null ? Math.max(distKm * 18, 80) : 120)}–₱${Math.round(distKm != null ? Math.max(distKm * 28, 150) : 220)} fare.`,
+        tip: `Check Grab or InDrive for current prices. If surge is under 1.5x, book it — the time saved is worth it.`
       },
       ridehail_optional: {
         icon: '✨', badge: 'Your Choice · Conditions Clear',
@@ -2183,7 +2191,7 @@
     const b   = parseInt(document.getElementById('budgetInput').value) || 0;
     const e   = (document.querySelector('input[name="energy"]:checked') || {}).value || 'NORMAL';
     const dc  = distClass || 'UNKNOWN';
-    const cond = decideCondition(b, e, weatherState, trafficState, dc);
+    const cond = decideCondition(b, e, weatherState, trafficState, dc, distKm);
     const CONTENT = buildContent(distKm, dc);
     const c    = CONTENT[cond];
 
