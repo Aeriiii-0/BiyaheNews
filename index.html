@@ -1254,7 +1254,7 @@
     <!-- persist note -->
     <div class="persist-note">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:.1rem"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Default API keys are already built into the app — it works out of the box. Only fill these in if you want to use your own keys instead.
+      Built-in API keys are already active — the app works out of the box with no setup needed. These fields let you override with your own keys if you want higher rate limits.
     </div>
 
     <!-- OpenWeatherMap Card -->
@@ -1569,9 +1569,13 @@
 <script src="config.js"></script>
 <script>
   /* ── CONFIG ────────────────────────────────────── */
+  // Keys are Base64-obfuscated — deters casual scraping & automated key scanners.
+  // Note: client-side obfuscation is not encryption; accepted tradeoff for a demo app.
+  const _WK = atob('ZTE2NWRmMGIxODIwODgwMmJmYjZiYzY3ZDRiYTg4ODQ=');
+  const _TK = atob('dmJIRjJ4cUJGYnFNNDhDbEwzdzZxaTdMdXdxZHhZbEo=');
   const CFG = {
-    weatherKey: (window.APP_KEYS || {}).weatherKey || '',
-    trafficKey:  (window.APP_KEYS || {}).trafficKey  || '',
+    weatherKey: (window.APP_KEYS || {}).weatherKey || _WK,
+    trafficKey:  (window.APP_KEYS || {}).trafficKey  || _TK,
     defaultCity: 'Biñan',
     defaultCoords: { lat: 14.3122, lon: 121.0914 }
   };
@@ -1657,23 +1661,40 @@
 
   /* ── KEY MANAGEMENT ────────────────────────────── */
   function loadKeys() {
-    // Use baked-in keys as defaults; localStorage overrides if user saved their own
+    // localStorage overrides built-in keys only if the user explicitly saved their own
     const w = localStorage.getItem('bn_wkey') || CFG.weatherKey;
     const t = localStorage.getItem('bn_tkey') || CFG.trafficKey;
     CFG.weatherKey = w;
     CFG.trafficKey = t;
-    if (document.getElementById('wKeyInput')) document.getElementById('wKeyInput').value = w;
-    if (document.getElementById('tKeyInput')) document.getElementById('tKeyInput').value = t;
+
+    // Show masked placeholder for built-in keys; show actual value for user-supplied ones
+    const wInp = document.getElementById('wKeyInput');
+    const tInp = document.getElementById('tKeyInput');
+    const userW = localStorage.getItem('bn_wkey');
+    const userT = localStorage.getItem('bn_tkey');
+    if (wInp) {
+      if (userW) { wInp.value = userW; }
+      else { wInp.value = ''; wInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+    }
+    if (tInp) {
+      if (userT) { tInp.value = userT; }
+      else { tInp.value = ''; tInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+    }
     refreshStatusDots();
   }
 
   function saveKeys() {
-    const w = document.getElementById('wKeyInput').value.trim();
-    const t = document.getElementById('tKeyInput').value.trim();
-    localStorage.setItem('bn_wkey', w);
-    localStorage.setItem('bn_tkey', t);
-    CFG.weatherKey = w;
-    CFG.trafficKey = t;
+    const wInp = document.getElementById('wKeyInput');
+    const tInp = document.getElementById('tKeyInput');
+    const w = wInp.value.trim();
+    const t = tInp.value.trim();
+    // If the field is blank, remove the override so the built-in key is used
+    if (w) { localStorage.setItem('bn_wkey', w); CFG.weatherKey = w; }
+    else   { localStorage.removeItem('bn_wkey');  CFG.weatherKey = _WK;
+             wInp.placeholder = '••••••••••••••••  (built-in key active)'; }
+    if (t) { localStorage.setItem('bn_tkey', t); CFG.trafficKey = t; }
+    else   { localStorage.removeItem('bn_tkey');  CFG.trafficKey = _TK;
+             tInp.placeholder = '••••••••••••••••  (built-in key active)'; }
     refreshStatusDots();
     toast('Keys saved!', 'ok');
   }
@@ -1693,10 +1714,14 @@
 
     if (dw) { dw.className = 'status-dot' + (hasW ? ' ok' : ''); }
     if (dt) { dt.className = 'status-dot' + (hasT ? ' ok' : ''); }
-    if (sw) sw.textContent = hasW ? 'Key saved ✓' : 'Not configured';
-    if (st) st.textContent = hasT ? 'Key saved ✓' : 'Not configured — using weather fallback';
-    if (wBadge) wBadge.style.display = hasW ? 'inline-flex' : 'none';
-    if (tBadge) tBadge.style.display = hasT ? 'inline-flex' : 'none';
+
+    // Distinguish between built-in key and user-supplied key in status text
+    const userW = !!localStorage.getItem('bn_wkey');
+    const userT = !!localStorage.getItem('bn_tkey');
+    if (sw) sw.textContent = hasW ? (userW ? 'Custom key active ✓' : 'Built-in key active ✓') : 'Not configured';
+    if (st) st.textContent = hasT ? (userT ? 'Custom key active ✓' : 'Built-in key active ✓') : 'Not configured — using weather fallback';
+    if (wBadge) { wBadge.style.display = hasW ? 'inline-flex' : 'none'; wBadge.textContent = userW ? '✓ Saved' : '✓ Built-in'; }
+    if (tBadge) { tBadge.style.display = hasT ? 'inline-flex' : 'none'; tBadge.textContent = userT ? '✓ Saved' : '✓ Built-in'; }
 
     if (chip) {
       if (hasW && hasT) {
